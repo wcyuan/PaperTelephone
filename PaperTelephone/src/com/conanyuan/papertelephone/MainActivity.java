@@ -69,8 +69,7 @@ public class MainActivity extends FragmentActivity {
     public static enum Page {
     	LOCAL_GAMES     ("Local Games"),
     	NETWORK_GAMES   ("Network Games"),
-    	COMPLETED_GAMES ("Completed Games"),
-    	END             ("END");
+    	COMPLETED_GAMES ("Completed Games");
 
     	private final String name;
     	
