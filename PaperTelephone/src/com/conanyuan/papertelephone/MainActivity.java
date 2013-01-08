@@ -1,6 +1,8 @@
 package com.conanyuan.papertelephone;
 
-import android.app.Activity;
+import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -20,18 +22,31 @@ import android.widget.TextView;
 
 
 public class MainActivity extends FragmentActivity {
-    static final int NUM_ITEMS = 10;
-
-    MyAdapter mAdapter;
-
-    ViewPager mPager;
-
+	private MyAdapter mAdapter;
+    private ViewPager mPager;
+    private ArrayList<IGame> mLocalGames;
+    private ArrayList<IGame> mNetworkGames;
+    private ArrayList<IGame> mCompletedGames;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_pager);
+        setContentView(R.layout.main_layout);
+        
+        mLocalGames = new ArrayList<IGame>();
+        mNetworkGames = new ArrayList<IGame>();
+        mCompletedGames = new ArrayList<IGame>();
 
-        mAdapter = new MyAdapter(getSupportFragmentManager());
+        List<ArrayList<IGame>> gameList = new ArrayList<ArrayList<IGame>>();
+        gameList.add(mLocalGames);
+        gameList.add(mNetworkGames);
+        gameList.add(mCompletedGames);
+        List<String> names = new ArrayList<String>();
+        names.add(Page.LOCAL_GAMES.getName());
+        names.add(Page.NETWORK_GAMES.getName());
+        names.add(Page.COMPLETED_GAMES.getName());
+        mAdapter = new MyAdapter(getSupportFragmentManager(),
+        		gameList, names);
 
         mPager = (ViewPager)findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
@@ -46,40 +61,72 @@ public class MainActivity extends FragmentActivity {
         button = (Button)findViewById(R.id.goto_last);
         button.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
-                mPager.setCurrentItem(NUM_ITEMS-1);
+                mPager.setCurrentItem(2);
             }
         });
     }
 
+    public static enum Page {
+    	LOCAL_GAMES     ("Local Games"),
+    	NETWORK_GAMES   ("Network Games"),
+    	COMPLETED_GAMES ("Completed Games"),
+    	END             ("END");
+
+    	private final String name;
+    	
+    	Page(String name) {
+    		this.name = name;
+    	}
+
+    	public String getName() {
+    		return name;
+    	}
+    	
+    	private static final int size = Page.values().length;
+    	public static int size() {
+    		return size;
+    	}
+    }
+    
     public static class MyAdapter extends FragmentPagerAdapter {
-        public MyAdapter(FragmentManager fragmentManager) {
+    	private List<ArrayList<IGame>> mGameLists;
+    	private List<String> mNames;
+
+    	public MyAdapter(FragmentManager fragmentManager,
+    			List<ArrayList<IGame>> gameLists,
+    			List<String> names) {
             super(fragmentManager);
-        }
+    		mGameLists = gameLists;
+    		mNames = names;
+    	}
 
         @Override
         public int getCount() {
-            return NUM_ITEMS;
+            return Page.size();
         }
 
         @Override
         public Fragment getItem(int position) {
-            return ArrayListFragment.newInstance(position);
+        	return ArrayListFragment.newInstance(mGameLists.get(position),
+        			mNames.get(position));
         }
     }
 
     public static class ArrayListFragment extends ListFragment {
-        int mNum;
-
+        private ArrayList<IGame> mGames;
+        private String mName;
+        
         /**
-         * Create a new instance of CountingFragment, providing "num"
+         * Create a new instance of CountingFragment, providing "games"
          * as an argument.
          */
-        static ArrayListFragment newInstance(int num) {
-            ArrayListFragment f = new ArrayListFragment();
-
-            // Supply num input as an argument.
+        static ArrayListFragment newInstance(ArrayList<IGame> games,
+        		String name) {
+        	ArrayListFragment f = new ArrayListFragment();
+        	
             Bundle args = new Bundle();
-            args.putInt("num", num);
+            args.putParcelableArrayList("games", games);
+            args.putString("name", name);
             f.setArguments(args);
 
             return f;
@@ -91,7 +138,13 @@ public class MainActivity extends FragmentActivity {
         @Override
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-            mNum = getArguments() != null ? getArguments().getInt("num") : 1;
+            if (getArguments() != null) {
+            	mGames = getArguments().getParcelableArrayList("games");
+            	mName = getArguments().getString("name");
+            } else {
+            	mGames = new ArrayList<IGame>();
+            	mName = "";
+            }
         }
 
         /**
@@ -103,16 +156,16 @@ public class MainActivity extends FragmentActivity {
                 Bundle savedInstanceState) {
             View v = inflater.inflate(R.layout.fragment_pager_list, container, false);
             View tv = v.findViewById(R.id.text);
-            ((TextView)tv).setText("Fragment #" + mNum);
+            ((TextView)tv).setText(mName);
             return v;
         }
 
         @Override
         public void onActivityCreated(Bundle savedInstanceState) {
-            super.onActivityCreated(savedInstanceState);
-            setListAdapter(new ArrayAdapter<String>(getActivity(),
-                    android.R.layout.simple_list_item_1,
-                    new String[]{"abc", "def"}));
+        	super.onActivityCreated(savedInstanceState);
+        	setListAdapter(new ArrayAdapter<IGame>(getActivity(),
+        			android.R.layout.simple_list_item_1,
+        			mGames));
         }
 
         @Override
@@ -121,122 +174,3 @@ public class MainActivity extends FragmentActivity {
         }
     }
 }
-
-/*
-
-import android.app.ActionBar;
-import android.app.FragmentTransaction;
-import android.content.Context;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.app.NavUtils;
-import android.support.v4.view.ViewPager;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-
-public class MainActivity extends FragmentActivity {
-
-    /**
-     * The {@link android.support.v4.view.PagerAdapter} that will provide fragments for each of the
-     * sections. We use a {@link android.support.v4.app.FragmentPagerAdapter} derivative, which will
-     * keep every loaded fragment in memory. If this becomes too memory intensive, it may be best
-     * to switch to a {@link android.support.v4.app.FragmentStatePagerAdapter}.
-     */
-/*
-    SectionsPagerAdapter mSectionsPagerAdapter;
-    /**
-     * The {@link ViewPager} that will host the section contents.
-     */
-/*
-    ViewPager mViewPager;
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        // Create the adapter that will return a fragment for each of the three primary sections
-        // of the app.
-        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-
-
-        // Set up the ViewPager with the sections adapter.
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(mSectionsPagerAdapter);
-
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
-    }
-
-    
-
-
-    /**
-     * A {@link FragmentPagerAdapter} that returns a fragment corresponding to one of the primary
-     * sections of the app.
-     */
-/*
-public class TabsAdapter extends FragmentPagerAdapter {
-
-        public TabsAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int i) {
-            Fragment fragment = new DummySectionFragment();
-            Bundle args = new Bundle();
-            args.putInt(DummySectionFragment.ARG_SECTION_NUMBER, i + 1);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        @Override
-        public int getCount() {
-            return 3;
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            switch (position) {
-                case 0: return getString(R.string.title_section1).toUpperCase();
-                case 1: return getString(R.string.title_section2).toUpperCase();
-                case 2: return getString(R.string.title_section3).toUpperCase();
-            }
-            return null;
-        }
-    }
-
-    /**
-     * A dummy fragment representing a section of the app, but that simply displays dummy text.
-     */
-/*
-public static class DummySectionFragment extends Fragment {
-        public DummySectionFragment() {
-        }
-
-        public static final String ARG_SECTION_NUMBER = "section_number";
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            TextView textView = new TextView(getActivity());
-            textView.setGravity(Gravity.CENTER);
-            Bundle args = getArguments();
-            textView.setText(Integer.toString(args.getInt(ARG_SECTION_NUMBER)));
-            return textView;
-        }
-    }
-}
-*/

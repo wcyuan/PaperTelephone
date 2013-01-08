@@ -1,38 +1,34 @@
 package com.conanyuan.papertelephone;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class User {
 	private String mName;
 	private String mEmail;
-	private int mId;
+	private static Map<String, User> Users = new HashMap<String, User>();
 
-	public User(String name, String email, int id) {
+	public static User find(String name, String email) {
+		if (Users.containsKey(email)) {
+			return Users.get(email);
+		} else {
+			User user = new User(name, email);
+			Users.put(email, user);
+			return user;
+		}
+	}
+
+	private User(String name, String email) {
 		super();
 		mName = name;
 		mEmail = email;
-		mId = id;
 	}
 
 	public String getName() {
 		return mName;
 	}
 
-	public void setName(String name) {
-		mName = name;
-	}
-
 	public String getEmail() {
 		return mEmail;
-	}
-
-	public void setEmail(String email) {
-		mEmail = email;
-	}
-
-	public int getId() {
-		return mId;
-	}
-
-	public void setmId(int id) {
-		mId = id;
 	}
 }
