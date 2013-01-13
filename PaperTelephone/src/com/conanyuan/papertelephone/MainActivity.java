@@ -20,156 +20,170 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-
 public class MainActivity extends FragmentActivity {
 	private MyAdapter mAdapter;
-    private ViewPager mPager;
-    private ArrayList<IGame> mLocalGames;
-    private ArrayList<IGame> mNetworkGames;
-    private ArrayList<IGame> mCompletedGames;
-    
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.main_layout);
-        
-        mLocalGames = new ArrayList<IGame>();
-        mNetworkGames = new ArrayList<IGame>();
-        mCompletedGames = new ArrayList<IGame>();
+	private ViewPager mPager;
+	private ArrayList<IGame> mLocalGames;
+	private ArrayList<IGame> mNetworkGames;
+	private ArrayList<IGame> mCompletedGames;
 
-        List<ArrayList<IGame>> gameList = new ArrayList<ArrayList<IGame>>();
-        gameList.add(mLocalGames);
-        gameList.add(mNetworkGames);
-        gameList.add(mCompletedGames);
-        List<String> names = new ArrayList<String>();
-        names.add(Page.LOCAL_GAMES.getName());
-        names.add(Page.NETWORK_GAMES.getName());
-        names.add(Page.COMPLETED_GAMES.getName());
-        mAdapter = new MyAdapter(getSupportFragmentManager(),
-        		gameList, names);
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.main_layout);
 
-        mPager = (ViewPager)findViewById(R.id.pager);
-        mPager.setAdapter(mAdapter);
+		mLocalGames = new ArrayList<IGame>();
+		mNetworkGames = new ArrayList<IGame>();
+		mCompletedGames = new ArrayList<IGame>();
 
-        // Watch for button clicks.
-        Button button = (Button)findViewById(R.id.goto_first);
-        button.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                mPager.setCurrentItem(0);
-            }
-        });
-        button = (Button)findViewById(R.id.goto_last);
-        button.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                mPager.setCurrentItem(2);
-            }
-        });
-    }
+		List<ArrayList<IGame>> gameList = new ArrayList<ArrayList<IGame>>();
+		gameList.add(mLocalGames);
+		gameList.add(mNetworkGames);
+		gameList.add(mCompletedGames);
+		List<String> names = new ArrayList<String>();
+		names.add(Page.LOCAL_GAMES.getName());
+		names.add(Page.NETWORK_GAMES.getName());
+		names.add(Page.COMPLETED_GAMES.getName());
+		mAdapter = new MyAdapter(getSupportFragmentManager(), gameList, names);
 
-    public static enum Page {
-    	LOCAL_GAMES     ("Local Games"),
-    	NETWORK_GAMES   ("Network Games"),
-    	COMPLETED_GAMES ("Completed Games");
+		mPager = (ViewPager) findViewById(R.id.pager);
+		mPager.setAdapter(mAdapter);
 
-    	private final String name;
-    	
-    	Page(String name) {
-    		this.name = name;
-    	}
+		// Watch for button clicks.
+		Button button = (Button) findViewById(R.id.goto_first);
+		button.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				mPager.setCurrentItem(0);
+			}
+		});
+		button = (Button) findViewById(R.id.goto_last);
+		button.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				mPager.setCurrentItem(2);
+			}
+		});
+	}
 
-    	public String getName() {
-    		return name;
-    	}
-    	
-    	private static final int size = Page.values().length;
-    	public static int size() {
-    		return size;
-    	}
-    }
-    
-    public static class MyAdapter extends FragmentPagerAdapter {
-    	private List<ArrayList<IGame>> mGameLists;
-    	private List<String> mNames;
+	public static enum Page {
+		LOCAL_GAMES("Local Games"), NETWORK_GAMES("Network Games"), COMPLETED_GAMES(
+				"Completed Games");
 
-    	public MyAdapter(FragmentManager fragmentManager,
-    			List<ArrayList<IGame>> gameLists,
-    			List<String> names) {
-            super(fragmentManager);
-    		mGameLists = gameLists;
-    		mNames = names;
-    	}
+		private final String name;
 
-        @Override
-        public int getCount() {
-            return Page.size();
-        }
+		Page(String name) {
+			this.name = name;
+		}
 
-        @Override
-        public Fragment getItem(int position) {
-        	return ArrayListFragment.newInstance(mGameLists.get(position),
-        			mNames.get(position));
-        }
-    }
+		public String getName() {
+			return name;
+		}
 
-    public static class ArrayListFragment extends ListFragment {
-        private ArrayList<IGame> mGames;
-        private String mName;
-        
-        /**
-         * Create a new instance of CountingFragment, providing "games"
-         * as an argument.
-         */
-        static ArrayListFragment newInstance(ArrayList<IGame> games,
-        		String name) {
-        	ArrayListFragment f = new ArrayListFragment();
-        	
-            Bundle args = new Bundle();
-            args.putParcelableArrayList("games", games);
-            args.putString("name", name);
-            f.setArguments(args);
+		private static final int size = Page.values().length;
 
-            return f;
-        }
+		public static int size() {
+			return size;
+		}
+	}
 
-        /**
-         * When creating, retrieve this instance's number from its arguments.
-         */
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            if (getArguments() != null) {
-            	mGames = getArguments().getParcelableArrayList("games");
-            	mName = getArguments().getString("name");
-            } else {
-            	mGames = new ArrayList<IGame>();
-            	mName = "";
-            }
-        }
+	public static class MyAdapter extends FragmentPagerAdapter {
+		private List<ArrayList<IGame>> mGameLists;
+		private List<String> mNames;
 
-        /**
-         * The Fragment's UI is just a simple text view showing its
-         * instance number.
-         */
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                Bundle savedInstanceState) {
-            View v = inflater.inflate(R.layout.fragment_pager_list, container, false);
-            View tv = v.findViewById(R.id.text);
-            ((TextView)tv).setText(mName);
-            return v;
-        }
+		public MyAdapter(FragmentManager fragmentManager,
+				List<ArrayList<IGame>> gameLists, List<String> names) {
+			super(fragmentManager);
+			mGameLists = gameLists;
+			mNames = names;
+		}
 
-        @Override
-        public void onActivityCreated(Bundle savedInstanceState) {
-        	super.onActivityCreated(savedInstanceState);
-        	setListAdapter(new ArrayAdapter<IGame>(getActivity(),
-        			android.R.layout.simple_list_item_1,
-        			mGames));
-        }
+		@Override
+		public int getCount() {
+			return Page.size();
+		}
 
-        @Override
-        public void onListItemClick(ListView l, View v, int position, long id) {
-            Log.i("FragmentList", "Item clicked: " + id);
-        }
-    }
+		@Override
+		public Fragment getItem(int position) {
+			return ArrayListFragment.newInstance(mGameLists.get(position),
+					mNames.get(position));
+		}
+	}
+
+	public static class ArrayListFragment extends ListFragment {
+		private ArrayList<IGame> mGames;
+		private String mName;
+
+		/**
+		 * Create a new instance of CountingFragment, providing "games" as an
+		 * argument.
+		 */
+		static ArrayListFragment newInstance(ArrayList<IGame> games, String name) {
+			ArrayListFragment f = new ArrayListFragment();
+
+			Bundle args = new Bundle();
+			args.putParcelableArrayList("games", games);
+			args.putString("name", name);
+			f.setArguments(args);
+
+			return f;
+		}
+
+		/**
+		 * When creating, retrieve this instance's number from its arguments.
+		 */
+		@Override
+		public void onCreate(Bundle savedInstanceState) {
+			super.onCreate(savedInstanceState);
+			if (getArguments() != null) {
+				mGames = getArguments().getParcelableArrayList("games");
+				mName = getArguments().getString("name");
+			} else {
+				mGames = new ArrayList<IGame>();
+				mName = "";
+			}
+		}
+
+		/**
+		 * The Fragment's UI is just a simple text view showing its instance
+		 * number.
+		 */
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View v = inflater.inflate(R.layout.fragment_pager_list, container,
+					false);
+			View tv = v.findViewById(R.id.text);
+			((TextView) tv).setText(mName);
+
+			// Watch for requests to add a new game.
+			Button button = (Button) v.findViewById(R.id.new_game);
+			button.setOnClickListener(new OnClickListener() {
+				@SuppressWarnings("unchecked")
+				public void onClick(View v) {
+					mGames.add(new PhraseGame());
+					// Have to cast to an ArrayAdapter in order to call
+					// notifyDataSetChanged.
+					// And if we don't call notifyDataSetChanged, then the view
+					// won't know the array changed until we move to a different
+					// tab and move back. We know we will get an ArrayAdapter
+					// because that's what we set it to in onActivityCreated.
+					((ArrayAdapter<IGame>) getListAdapter())
+							.notifyDataSetChanged();
+				}
+			});
+
+			return v;
+		}
+
+		@Override
+		public void onActivityCreated(Bundle savedInstanceState) {
+			super.onActivityCreated(savedInstanceState);
+			setListAdapter(new ArrayAdapter<IGame>(getActivity(),
+					android.R.layout.simple_list_item_1, mGames));
+		}
+
+		@Override
+		public void onListItemClick(ListView l, View v, int position, long id) {
+			Log.i("FragmentList", "Item clicked: " + id);
+		}
+	}
 }

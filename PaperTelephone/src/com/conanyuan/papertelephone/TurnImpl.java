@@ -28,6 +28,7 @@ public abstract class TurnImpl implements ITurn {
 		mUser = user;
 	}
 
+	@Override
 	public Date getTimestamp() {
 		return mTimestamp;
 	}

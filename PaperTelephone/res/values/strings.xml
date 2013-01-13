@@ -9,5 +9,7 @@
     <string name="title_activity_main">MainActivity</string>
     <string name="first">first</string>
     <string name="last">last</string>
+    <string name="no_items_">No items.</string>
+    <string name="new_game">New Game</string>
 
 </resources>

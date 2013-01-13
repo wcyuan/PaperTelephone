@@ -27,7 +27,7 @@ public abstract class GameImpl implements IGame {
 	}
 
 	protected abstract ITurn getNextTurn();
-	
+
 	@Override
 	public int describeContents() {
 		return 0;
@@ -36,5 +36,17 @@ public abstract class GameImpl implements IGame {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeList(mTurns);
+	}
+
+	@Override
+	public String toString() {
+		int nturns = mTurns.size();
+
+		if (nturns == 0) {
+			return "No Turns";
+		} else {
+			return nturns + " turns.  Last turn at: "
+					+ mTurns.get(nturns - 1).getTimestamp();
+		}
 	}
 }
