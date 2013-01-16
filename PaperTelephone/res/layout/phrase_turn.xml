@@ -1,0 +1,23 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <TextView
+		android:id="@+id/prev_phrase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        tools:context=".GameActivity" />
+
+    <EditText
+		android:id="@+id/next_phrase"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:inputType="text"
+        android:hint="@string/phrase_hint"
+        tools:context=".GameActivity" />
+    
+    
+</RelativeLayout>

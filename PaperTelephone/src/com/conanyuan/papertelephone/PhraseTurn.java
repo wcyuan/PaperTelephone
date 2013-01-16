@@ -10,10 +10,24 @@ public class PhraseTurn extends TurnImpl {
 		super();
 	}
 
+	@Override
+	public int getViewId() {
+		return R.layout.phrase_turn;
+	}
+
+	@Override
+	public int getEditId() {
+		return R.layout.phrase_turn;
+	}
+
 	public String getPhrase() {
 		return mPhrase;
 	}
 	
+	public void setPhrase(CharSequence str) {
+		mPhrase = str.toString();
+	}
+
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		super.writeToParcel(dest, flags);

@@ -3,42 +3,19 @@
         android:gravity="center_horizontal"
         android:layout_width="fill_parent" android:layout_height="fill_parent">
 
-    <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
-            android:layout_width="fill_parent"
-            android:layout_height="0px"
-            android:layout_weight="1">
-    </android.support.v4.view.ViewPager>
 
-    <LinearLayout android:orientation="horizontal"
-            android:gravity="center"
-            android:layout_width="fill_parent" android:layout_height="wrap_content"
-            android:layout_weight="0">
-        <Button android:id="@+id/goto_first"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="@string/first">
-        </Button>
-        <Button android:id="@+id/goto_last"
-            android:layout_width="wrap_content" android:layout_height="wrap_content"
-            android:text="@string/last">
-        </Button>
-    </LinearLayout>
-</LinearLayout>
-
-<!--
-
-<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
+    <android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/pager"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="0dp"
+	android:layout_weight="1"
     tools:context=".MainActivity">
-
-    <! - - 
+        
+    <!-- 
     This title strip will display the currently visible page title, as well as the page
     titles for adjacent pages.
     -->
-    <!--
     <android.support.v4.view.PagerTitleStrip android:id="@+id/pager_title_strip"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -48,5 +25,5 @@
         android:paddingTop="4dp"
         android:paddingBottom="4dp" />
     
-</android.support.v4.view.ViewPager>
-  -->
+	</android.support.v4.view.ViewPager>
+</LinearLayout>

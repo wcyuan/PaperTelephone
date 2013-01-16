@@ -1,7 +1,13 @@
 package com.conanyuan.papertelephone;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.view.KeyEvent;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 public class PhraseGame extends GameImpl {
 
@@ -16,6 +22,28 @@ public class PhraseGame extends GameImpl {
 	@Override
 	public ITurn getNextTurn() {
 		return new PhraseTurn();
+	}
+
+	@Override
+	public void setNextTurnView(final Activity a) {
+		a.setContentView(R.layout.phrase_turn);
+		ITurn lastTurn = getPrevTurn();
+		if (lastTurn != null) {
+			TextView prev = (TextView) a.findViewById(R.id.prev_phrase);
+			prev.setText(((PhraseTurn)lastTurn).getPhrase());
+		}
+		EditText next = (EditText) a.findViewById(R.id.next_phrase);
+		next.setOnEditorActionListener(new OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		    	PhraseTurn nextTurn = new PhraseTurn();
+		    	nextTurn.setPhrase(v.getText());
+		    	addTurn(nextTurn);
+		    	Intent intent = new Intent(a, MainActivity.class);
+			    a.startActivity(intent);
+		    	return true;
+			}
+		});
 	}
 
 	public static final Parcelable.Creator<PhraseGame> CREATOR =

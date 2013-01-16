@@ -3,6 +3,7 @@ package com.conanyuan.papertelephone;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
@@ -18,7 +19,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.TextView;
 
 public class MainActivity extends FragmentActivity {
 	private MyAdapter mAdapter;
@@ -48,20 +48,6 @@ public class MainActivity extends FragmentActivity {
 
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
-
-		// Watch for button clicks.
-		Button button = (Button) findViewById(R.id.goto_first);
-		button.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				mPager.setCurrentItem(0);
-			}
-		});
-		button = (Button) findViewById(R.id.goto_last);
-		button.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				mPager.setCurrentItem(2);
-			}
-		});
 	}
 
 	public static enum Page {
@@ -103,25 +89,28 @@ public class MainActivity extends FragmentActivity {
 
 		@Override
 		public Fragment getItem(int position) {
-			return ArrayListFragment.newInstance(mGameLists.get(position),
-					mNames.get(position));
+			return ArrayListFragment.newInstance(mGameLists.get(position));
+		}
+
+		@Override
+		public CharSequence getPageTitle(int position) {
+			return mNames.get(position);
 		}
 	}
 
 	public static class ArrayListFragment extends ListFragment {
+		static final String GAME_MESSAGE = "com.conanyuan.papertelephone.GAME";
 		private ArrayList<IGame> mGames;
-		private String mName;
 
 		/**
 		 * Create a new instance of CountingFragment, providing "games" as an
 		 * argument.
 		 */
-		static ArrayListFragment newInstance(ArrayList<IGame> games, String name) {
+		static ArrayListFragment newInstance(ArrayList<IGame> games) {
 			ArrayListFragment f = new ArrayListFragment();
 
 			Bundle args = new Bundle();
 			args.putParcelableArrayList("games", games);
-			args.putString("name", name);
 			f.setArguments(args);
 
 			return f;
@@ -135,10 +124,8 @@ public class MainActivity extends FragmentActivity {
 			super.onCreate(savedInstanceState);
 			if (getArguments() != null) {
 				mGames = getArguments().getParcelableArrayList("games");
-				mName = getArguments().getString("name");
 			} else {
 				mGames = new ArrayList<IGame>();
-				mName = "";
 			}
 		}
 
@@ -151,8 +138,6 @@ public class MainActivity extends FragmentActivity {
 				Bundle savedInstanceState) {
 			View v = inflater.inflate(R.layout.fragment_pager_list, container,
 					false);
-			View tv = v.findViewById(R.id.text);
-			((TextView) tv).setText(mName);
 
 			// Watch for requests to add a new game.
 			Button button = (Button) v.findViewById(R.id.new_game);
@@ -184,6 +169,9 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onListItemClick(ListView l, View v, int position, long id) {
 			Log.i("FragmentList", "Item clicked: " + id);
+			Intent intent = new Intent(getActivity(), GameActivity.class);
+		    intent.putExtra(GAME_MESSAGE, mGames.get(position));
+		    startActivity(intent);
 		}
 	}
 }

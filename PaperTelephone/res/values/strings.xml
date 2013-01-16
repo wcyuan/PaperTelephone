@@ -1,15 +1,11 @@
 <resources>
 
     <string name="app_name">PaperTelephone</string>
-    <string name="title_section3">Section 3</string>
-    <string name="title_section2">Section 2</string>
-    <string name="title_section1">Section 1</string>
-    <string name="hello_world">Hello world!</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">MainActivity</string>
-    <string name="first">first</string>
-    <string name="last">last</string>
     <string name="no_items_">No items.</string>
     <string name="new_game">New Game</string>
+    <string name="title_activity_game">GameActivity</string>
+    <string name="phrase_hint">Enter a phrase.</string>
 
 </resources>

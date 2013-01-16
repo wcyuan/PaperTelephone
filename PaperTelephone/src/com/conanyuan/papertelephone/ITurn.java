@@ -8,4 +8,8 @@ public interface ITurn extends Parcelable {
 
 	public abstract Date getTimestamp();
 
+	public abstract int getViewId();
+
+	public abstract int getEditId();
+
 }
