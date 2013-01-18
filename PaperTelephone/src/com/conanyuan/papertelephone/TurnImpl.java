@@ -17,7 +17,9 @@ public abstract class TurnImpl implements ITurn {
 		mTimestamp = (Date) in.readSerializable();
 		String name = in.readString();
 		String email = in.readString();
-		mUser = User.find(name, email);
+		if (!name.equals("") && !email.equals("")) {
+			mUser = User.find(name, email);
+		}
 	}
 
 	public User getUser() {
@@ -45,7 +47,12 @@ public abstract class TurnImpl implements ITurn {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeSerializable(mTimestamp);
-		dest.writeString(mUser.getName());
-		dest.writeString(mUser.getEmail());
+		if (mUser != null) {
+			dest.writeString(mUser.getName());
+			dest.writeString(mUser.getEmail());
+		} else {
+			dest.writeString("");
+			dest.writeString("");
+		}
 	}
 }

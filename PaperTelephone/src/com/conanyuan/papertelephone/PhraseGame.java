@@ -19,11 +19,10 @@ public class PhraseGame extends GameImpl {
 		super(in);
 	}
 
-	@Override
-	public ITurn getNextTurn() {
+	protected ITurn getNewTurn() {
 		return new PhraseTurn();
 	}
-
+	
 	@Override
 	public void setNextTurnView(final Activity a) {
 		a.setContentView(R.layout.phrase_turn);
@@ -39,8 +38,10 @@ public class PhraseGame extends GameImpl {
 		    	PhraseTurn nextTurn = new PhraseTurn();
 		    	nextTurn.setPhrase(v.getText());
 		    	addTurn(nextTurn);
-		    	Intent intent = new Intent(a, MainActivity.class);
-			    a.startActivity(intent);
+		    	Intent intent = new Intent();
+		    	intent.putExtra(MainActivity.ArrayListFragment.GAME_MESSAGE, nextTurn);
+		    	a.setResult(Activity.RESULT_OK, intent);
+		    	a.finish();
 		    	return true;
 			}
 		});

@@ -1,6 +1,9 @@
 package com.conanyuan.papertelephone;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 //import android.app.Activity;
@@ -23,12 +26,13 @@ public abstract class GameImpl implements IGame {
 		in.readList(mTurns, getClass().getClassLoader());
 	}
 
+	@Override
 	public void addTurn(ITurn turn) {
 		mTurns.add(turn);
 	}
 
-	protected abstract ITurn getNextTurn();
-
+	abstract protected ITurn getNewTurn();
+	
 	/*
 	@Override
 	public void setNextTurnView(Activity a) {
@@ -49,14 +53,32 @@ public abstract class GameImpl implements IGame {
 	}
 	 */
 
+	/* (non-Javadoc)
+	 * @see com.conanyuan.papertelephone.IGame#toFile(java.io.File)
+	 */
 	@Override
-	public int describeContents() {
-		return 0;
+	public void toDisk(File dir) throws IOException {
+		dir.mkdirs();
+		for (File file : dir.listFiles()) {
+			file.delete();
+		}
+		for (int ii = 0; ii < mTurns.size(); ii++) {
+			mTurns.get(ii).toFile(new File(dir, "Turn-" + ii));
+		}
 	}
 
+	/* (non-Javadoc)
+	 * @see com.conanyuan.papertelephone.IGame#fromFile(java.io.File)
+	 */
 	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		dest.writeList(mTurns);
+	public void fromDisk(File dir) throws IOException {
+		File[] files = dir.listFiles();
+		Arrays.sort(files);
+		for (File file : files) {
+			ITurn turn = getNewTurn();
+			turn.fromFile(file);
+			mTurns.add(turn);
+		}
 	}
 
 	@Override
@@ -80,4 +102,19 @@ public abstract class GameImpl implements IGame {
 			return mTurns.get(nturns - 1);
 		}
 	}
+
+
+	/* -------- BEGIN Parcelable interface -------------- */
+	
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeList(mTurns);
+	}
+
+	/* -------- END Parcelable interface -------------- */
 }

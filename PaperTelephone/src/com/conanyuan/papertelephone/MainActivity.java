@@ -49,6 +49,17 @@ public class MainActivity extends FragmentActivity {
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
 	}
+	
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onPause()
+	 */
+	@Override
+	protected void onPause() {
+		// TODO Auto-generated method stub
+		super.onPause();
+	}
+
+
 
 	public static enum Page {
 		LOCAL_GAMES("Local Games"), NETWORK_GAMES("Network Games"), COMPLETED_GAMES(
@@ -103,7 +114,7 @@ public class MainActivity extends FragmentActivity {
 		private ArrayList<IGame> mGames;
 
 		/**
-		 * Create a new instance of CountingFragment, providing "games" as an
+		 * Create a new instance of ArrayListFragment, providing "games" as an
 		 * argument.
 		 */
 		static ArrayListFragment newInstance(ArrayList<IGame> games) {
@@ -124,8 +135,6 @@ public class MainActivity extends FragmentActivity {
 			super.onCreate(savedInstanceState);
 			if (getArguments() != null) {
 				mGames = getArguments().getParcelableArrayList("games");
-			} else {
-				mGames = new ArrayList<IGame>();
 			}
 		}
 
@@ -171,7 +180,16 @@ public class MainActivity extends FragmentActivity {
 			Log.i("FragmentList", "Item clicked: " + id);
 			Intent intent = new Intent(getActivity(), GameActivity.class);
 		    intent.putExtra(GAME_MESSAGE, mGames.get(position));
-		    startActivity(intent);
+		    startActivityForResult(intent, position);
+		}
+
+		/* (non-Javadoc)
+		 * @see android.support.v4.app.Fragment#onActivityResult(int, int, android.content.Intent)
+		 */
+		@Override
+		public void onActivityResult(int requestCode, int resultCode,
+				Intent data) {
+			mGames.get(requestCode).addTurn((ITurn)data.getParcelableExtra(GAME_MESSAGE));
 		}
 	}
 }
