@@ -15,12 +15,14 @@ public final class R {
         public static final int ic_launcher=0x7f020001;
     }
     public static final class id {
-        public static final int menu_settings=0x7f070005;
+        public static final int menu_settings=0x7f070007;
         public static final int new_game=0x7f070000;
-        public static final int next_phrase=0x7f070004;
+        public static final int next_phrase=0x7f070006;
+        public static final int next_phrase_label=0x7f070005;
         public static final int pager=0x7f070001;
         public static final int pager_title_strip=0x7f070002;
-        public static final int prev_phrase=0x7f070003;
+        public static final int prev_phrase=0x7f070004;
+        public static final int prev_phrase_label=0x7f070003;
     }
     public static final class layout {
         public static final int fragment_pager_list=0x7f030000;
@@ -37,6 +39,8 @@ public final class R {
         public static final int new_game=0x7f040004;
         public static final int no_items_=0x7f040003;
         public static final int phrase_hint=0x7f040006;
+        public static final int previous_turn_=0x7f040008;
+        public static final int response=0x7f040007;
         public static final int title_activity_game=0x7f040005;
         public static final int title_activity_main=0x7f040002;
     }

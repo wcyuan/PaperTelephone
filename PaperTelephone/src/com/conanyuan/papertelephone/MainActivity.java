@@ -184,10 +184,16 @@ public class MainActivity extends FragmentActivity {
 		/* (non-Javadoc)
 		 * @see android.support.v4.app.Fragment#onActivityResult(int, int, android.content.Intent)
 		 */
+		@SuppressWarnings("unchecked")
 		@Override
 		public void onActivityResult(int requestCode, int resultCode,
 				Intent data) {
+			if (data == null) {
+				return;
+			}
 			mGames.get(requestCode).addTurn((ITurn)data.getParcelableExtra(GAME_MESSAGE));
+			((ArrayAdapter<IGame>) getListAdapter())
+			.notifyDataSetChanged();
 		}
 	}
 }

@@ -7,5 +7,7 @@
     <string name="new_game">New Game</string>
     <string name="title_activity_game">GameActivity</string>
     <string name="phrase_hint">Enter a phrase.</string>
+    <string name="response">Response</string>
+    <string name="previous_turn_">Previous Turn:</string>
 
 </resources>

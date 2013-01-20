@@ -1,23 +1,35 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
 
     <TextView
-		android:id="@+id/prev_phrase"
+        android:id="@+id/prev_phrase_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
+        android:text="@string/previous_turn_"
         tools:context=".GameActivity" />
 
-    <EditText
-		android:id="@+id/next_phrase"
+    <TextView
+        android:id="@+id/prev_phrase"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:inputType="text"
-        android:hint="@string/phrase_hint"
-        tools:context=".GameActivity" />
-    
-    
-</RelativeLayout>
+        android:background="@android:color/darker_gray"
+        android:text=""
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <TextView
+        android:id="@+id/next_phrase_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/response" />
+
+    <EditText
+        android:id="@+id/next_phrase"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="@string/phrase_hint" />
+
+</LinearLayout>
