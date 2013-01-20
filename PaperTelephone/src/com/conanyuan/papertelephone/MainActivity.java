@@ -59,8 +59,6 @@ public class MainActivity extends FragmentActivity {
 		super.onPause();
 	}
 
-
-
 	public static enum Page {
 		LOCAL_GAMES("Local Games"), NETWORK_GAMES("Network Games"), COMPLETED_GAMES(
 				"Completed Games");

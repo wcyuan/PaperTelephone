@@ -1,13 +1,7 @@
 package com.conanyuan.papertelephone;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.view.KeyEvent;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
 public class PhraseGame extends GameImpl {
 
@@ -22,29 +16,17 @@ public class PhraseGame extends GameImpl {
 	protected ITurn getNewTurn() {
 		return new PhraseTurn();
 	}
-	
-	@Override
-	public void setNextTurnView(final Activity a) {
-		a.setContentView(R.layout.phrase_turn);
-		ITurn lastTurn = getPrevTurn();
-		if (lastTurn != null) {
-			TextView prev = (TextView) a.findViewById(R.id.prev_phrase);
-			prev.setText(((PhraseTurn)lastTurn).getPhrase());
-		}
-		EditText next = (EditText) a.findViewById(R.id.next_phrase);
-		next.setOnEditorActionListener(new OnEditorActionListener() {
-			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		    	PhraseTurn nextTurn = new PhraseTurn();
-		    	nextTurn.setPhrase(v.getText());
-		    	addTurn(nextTurn);
-		    	Intent intent = new Intent();
-		    	intent.putExtra(MainActivity.ArrayListFragment.GAME_MESSAGE, nextTurn);
-		    	a.setResult(Activity.RESULT_OK, intent);
-		    	a.finish();
-		    	return true;
-			}
-		});
+
+	protected int getLayoutView() {
+		return R.layout.phrase_turn;
+	}
+
+	protected int getReadViewId() {
+		return R.id.prev_phrase;
+	}
+
+	protected int getEditViewId() {
+		return R.id.next_phrase;
 	}
 
 	public static final Parcelable.Creator<PhraseGame> CREATOR =

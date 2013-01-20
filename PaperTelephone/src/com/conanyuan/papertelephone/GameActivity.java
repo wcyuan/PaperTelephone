@@ -24,6 +24,13 @@ public class GameActivity extends Activity {
 		return true;
 	}
 
+	public void returnTurn(ITurn turn) {
+    	Intent intent = new Intent();
+    	intent.putExtra(MainActivity.ArrayListFragment.GAME_MESSAGE, turn);
+    	setResult(Activity.RESULT_OK, intent);
+    	finish();
+	}
+
 	/*
 	 * @Override public boolean onOptionsItemSelected(MenuItem item) { switch
 	 * (item.getItemId()) { case android.R.id.home:

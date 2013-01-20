@@ -32,26 +32,22 @@ public abstract class GameImpl implements IGame {
 	}
 
 	abstract protected ITurn getNewTurn();
-	
-	/*
+
+	abstract protected int getLayoutView();
+
+	abstract protected int getReadViewId();
+
+	abstract protected int getEditViewId();
+
 	@Override
-	public void setNextTurnView(Activity a) {
-		// Every turn should have a View for showing the content and editing the
-		// content. For example, a PhraseTurn shows content with a TextView and
-		// edits it with a EditText.
-		//
-		// The Game should just find the two views, and show them in a linear
-		// layout, along with text that shows which number turn we're on.
-		// Need to set the layout params
-		//getNextTurn().setView(a);
-		int nturns = mTurns.size();
-		if (nturns > 0) {
-			mTurns.get(nturns-1).getViewId();
+	public void setNextTurnView(final GameActivity a) {
+		a.setContentView(getLayoutView());
+		ITurn lastTurn = getPrevTurn();
+		if (lastTurn != null) {
+			lastTurn.setReadView(a, getReadViewId());
 		}
-		getNextTurn().getEditId();
-		a.setContentView(R.layout.phrase_turn);
+		getNewTurn().setEditView(a, this, getEditViewId());
 	}
-	 */
 
 	/* (non-Javadoc)
 	 * @see com.conanyuan.papertelephone.IGame#toFile(java.io.File)

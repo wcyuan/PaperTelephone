@@ -9,8 +9,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
+import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.view.KeyEvent;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 public class PhraseTurn extends TurnImpl {
 	private String mPhrase;
@@ -20,13 +25,24 @@ public class PhraseTurn extends TurnImpl {
 	}
 
 	@Override
-	public int getViewId() {
-		return R.layout.phrase_turn;
+	public void setReadView(final Activity a, int viewId) {
+		TextView prev = (TextView) a.findViewById(viewId);
+		prev.setText(getPhrase());
 	}
 
 	@Override
-	public int getEditId() {
-		return R.layout.phrase_turn;
+	public void setEditView(final GameActivity a, final IGame g, int viewId) {
+		EditText next = (EditText) a.findViewById(viewId);
+		final PhraseTurn turn = this;
+		next.setOnEditorActionListener(new OnEditorActionListener() {
+			@Override
+			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+		    	setPhrase(v.getText());
+		    	g.addTurn(turn);
+		    	a.returnTurn(turn);
+		    	return true;
+			}
+		});
 	}
 
 	public String getPhrase() {
