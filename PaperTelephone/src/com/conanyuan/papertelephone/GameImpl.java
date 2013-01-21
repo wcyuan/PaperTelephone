@@ -21,11 +21,6 @@ public abstract class GameImpl implements IGame {
 		mTurns = new ArrayList<ITurn>();
 	}
 
-	protected GameImpl(Parcel in) {
-		mTurns = new ArrayList<ITurn>();
-		in.readList(mTurns, getClass().getClassLoader());
-	}
-
 	@Override
 	public void addTurn(ITurn turn) {
 		mTurns.add(turn);
@@ -99,9 +94,13 @@ public abstract class GameImpl implements IGame {
 		}
 	}
 
-
 	/* -------- BEGIN Parcelable interface -------------- */
 	
+	protected GameImpl(Parcel in) {
+		mTurns = new ArrayList<ITurn>();
+		in.readList(mTurns, getClass().getClassLoader());
+	}
+
 	@Override
 	public int describeContents() {
 		return 0;

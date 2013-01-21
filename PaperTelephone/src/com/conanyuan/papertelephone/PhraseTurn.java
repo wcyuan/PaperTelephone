@@ -53,12 +53,6 @@ public class PhraseTurn extends TurnImpl {
 		mPhrase = str.toString();
 	}
 
-	@Override
-	public void writeToParcel(Parcel dest, int flags) {
-		super.writeToParcel(dest, flags);
-		dest.writeString(mPhrase);
-	}
-	
 	/* (non-Javadoc)
 	 * @see com.conanyuan.papertelephone.ITurn#toFile(java.lang.String)
 	 */
@@ -94,6 +88,14 @@ public class PhraseTurn extends TurnImpl {
 		}
 	}
 
+	/* -------- BEGIN Parcelable interface -------------- */
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		super.writeToParcel(dest, flags);
+		dest.writeString(mPhrase);
+	}
+
 	protected PhraseTurn(Parcel in) {
 		super(in);
 		mPhrase = in.readString();
@@ -110,4 +112,6 @@ public class PhraseTurn extends TurnImpl {
 			return new PhraseTurn[size];  
 		}
 	}; 
+
+	/* -------- END Parcelable interface -------------- */
 }

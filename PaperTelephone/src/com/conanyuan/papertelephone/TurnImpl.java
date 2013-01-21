@@ -13,15 +13,6 @@ public abstract class TurnImpl implements ITurn {
 		mTimestamp = new Date();
 	}
 
-	protected TurnImpl(Parcel in) {
-		mTimestamp = (Date) in.readSerializable();
-		String name = in.readString();
-		String email = in.readString();
-		if (!name.equals("") && !email.equals("")) {
-			mUser = User.find(name, email);
-		}
-	}
-
 	public User getUser() {
 		return mUser;
 	}
@@ -37,6 +28,17 @@ public abstract class TurnImpl implements ITurn {
 
 	public void setTimestamp(Date timestamp) {
 		mTimestamp = timestamp;
+	}
+
+	/* -------- BEGIN Parcelable interface -------------- */
+
+	protected TurnImpl(Parcel in) {
+		mTimestamp = (Date) in.readSerializable();
+		String name = in.readString();
+		String email = in.readString();
+		if (!name.equals("") && !email.equals("")) {
+			mUser = User.find(name, email);
+		}
 	}
 
 	@Override
@@ -55,4 +57,6 @@ public abstract class TurnImpl implements ITurn {
 			dest.writeString("");
 		}
 	}
+
+	/* -------- END Parcelable interface -------------- */
 }
