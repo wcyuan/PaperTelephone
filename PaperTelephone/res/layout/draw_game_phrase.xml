@@ -1,32 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" 
     android:id="@+id/container"
     >
-
+
     <TextView
         android:id="@+id/prev_turn_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/previous_turn_"
-        tools:context=".GameActivity" />
+        android:text="@string/previous_turn_" />
 
-    <TextView
-        android:id="@+id/prev_phrase"
+    <ImageView
+        android:id="@+id/prev_drawing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@android:color/darker_gray"
-        android:text=""
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-
+        android:src="@drawable/ic_action_search"
+        android:contentDescription="@string/prev_turn" />
+
     <TextView
         android:id="@+id/next_turn_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/response" />
-
+
     <EditText
         android:id="@+id/next_phrase"
         android:layout_width="fill_parent"

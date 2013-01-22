@@ -151,7 +151,7 @@ public class MainActivity extends FragmentActivity {
 			button.setOnClickListener(new OnClickListener() {
 				@SuppressWarnings("unchecked")
 				public void onClick(View v) {
-					mGames.add(new PhraseGame());
+					mGames.add(new DrawGame());
 					// Have to cast to an ArrayAdapter in order to call
 					// notifyDataSetChanged.
 					// And if we don't call notifyDataSetChanged, then the view
@@ -176,7 +176,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public void onListItemClick(ListView l, View v, int position, long id) {
 			Log.i("FragmentList", "Item clicked: " + id);
-			Intent intent = new Intent(getActivity(), GameActivity.class);
+			Intent intent = new Intent(getActivity(), DrawGameActivity.class);
 		    intent.putExtra(GAME_MESSAGE, mGames.get(position));
 		    startActivityForResult(intent, position);
 		}
@@ -192,8 +192,7 @@ public class MainActivity extends FragmentActivity {
 				return;
 			}
 			mGames.get(requestCode).addTurn((ITurn)data.getParcelableExtra(GAME_MESSAGE));
-			((ArrayAdapter<IGame>) getListAdapter())
-			.notifyDataSetChanged();
+			((ArrayAdapter<IGame>) getListAdapter()).notifyDataSetChanged();
 		}
 	}
 }

@@ -8,6 +8,8 @@ import java.util.List;
 
 //import android.app.Activity;
 import android.os.Parcel;
+import android.view.View;
+import android.widget.TextView;
 
 /**
  * The Game object.
@@ -28,8 +30,6 @@ public abstract class GameImpl implements IGame {
 
 	abstract protected ITurn getNewTurn();
 
-	abstract protected int getLayoutView();
-
 	abstract protected int getReadViewId();
 
 	abstract protected int getEditViewId();
@@ -38,7 +38,12 @@ public abstract class GameImpl implements IGame {
 	public void setNextTurnView(final GameActivity a) {
 		a.setContentView(getLayoutView());
 		ITurn lastTurn = getPrevTurn();
-		if (lastTurn != null) {
+		if (lastTurn == null) {
+			a.findViewById(R.id.prev_turn_label).setVisibility(View.GONE);
+			a.findViewById(getReadViewId()).setVisibility(View.GONE);
+			TextView next_label = (TextView)a.findViewById(R.id.next_turn_label);
+			next_label.setText("First Turn:");
+		} else {
 			lastTurn.setReadView(a, getReadViewId());
 		}
 		getNewTurn().setEditView(a, this, getEditViewId());
@@ -83,7 +88,12 @@ public abstract class GameImpl implements IGame {
 					+ mTurns.get(nturns - 1).getTimestamp();
 		}
 	}
-	
+
+	@Override
+	public int nTurns() {
+		return mTurns.size();
+	}
+
 	protected ITurn getPrevTurn() {
 		int nturns = mTurns.size();
 

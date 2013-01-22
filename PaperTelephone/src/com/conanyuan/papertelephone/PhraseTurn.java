@@ -27,7 +27,7 @@ public class PhraseTurn extends TurnImpl {
 	@Override
 	public void setReadView(final Activity a, int viewId) {
 		TextView prev = (TextView) a.findViewById(viewId);
-		prev.setText(getPhrase());
+		prev.setText(mPhrase);
 	}
 
 	@Override
@@ -37,20 +37,12 @@ public class PhraseTurn extends TurnImpl {
 		next.setOnEditorActionListener(new OnEditorActionListener() {
 			@Override
 			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		    	setPhrase(v.getText());
+		    	mPhrase = v.getText().toString();
 		    	g.addTurn(turn);
 		    	a.returnTurn(turn);
 		    	return true;
 			}
 		});
-	}
-
-	public String getPhrase() {
-		return mPhrase;
-	}
-	
-	public void setPhrase(CharSequence str) {
-		mPhrase = str.toString();
 	}
 
 	/* (non-Javadoc)

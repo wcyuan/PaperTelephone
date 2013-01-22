@@ -9,9 +9,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.widget.ImageView;
 
 public class DrawTurn extends TurnImpl {
 	private Bitmap mBitmap;
+
+	public DrawTurn() {
+		super();
+	}
+
+	public DrawTurn(Bitmap bm) {
+		super();
+		mBitmap = bm;
+	}
 
 	/* -------- BEGIN Parcelable interface -------------- */
 
@@ -42,14 +52,13 @@ public class DrawTurn extends TurnImpl {
 
 	@Override
 	public void setReadView(Activity a, int viewId) {
-		// TODO Auto-generated method stub
-
+		ImageView prev = (ImageView) a.findViewById(viewId);
+		prev.setImageBitmap(mBitmap);
 	}
 
 	@Override
 	public void setEditView(GameActivity a, IGame g, int viewId) {
-		// TODO Auto-generated method stub
-
+		// NOP: rely on the activity
 	}
 
 	@Override

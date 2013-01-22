@@ -16,7 +16,6 @@
 
 package com.conanyuan.papertelephone;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.*;
 import android.os.Bundle;
@@ -24,14 +23,46 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
-public class FingerPaint extends Activity
-        implements ColorPickerDialog.OnColorChangedListener {    
+public class DrawGameActivity extends GameActivity
+        implements ColorPickerDialog.OnColorChangedListener, OnClickListener {    
+
+	private MyView mDrawView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(new MyView(this));
+        
+        if (nTurns() % 2 == 0) {
+        	// all the work was done by the super class
+        	return;
+        }
+
+        // Show a phrase, enter a picture
+        //setContentView(new MyView(this));
+
+        LinearLayout layout = (LinearLayout)findViewById(R.id.container);
+        //ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
+        //		ViewGroup.LayoutParams.FILL_PARENT,
+        //		ViewGroup.LayoutParams.FILL_PARENT);
+        mDrawView = new MyView(this);
+        layout.addView(mDrawView,
+        		new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,
+        				LayoutParams.WRAP_CONTENT, 1));
+        Button done = new Button(this);
+        done.setLayoutParams(new ViewGroup.LayoutParams(
+        		ViewGroup.LayoutParams.FILL_PARENT,
+        		ViewGroup.LayoutParams.WRAP_CONTENT));
+        done.setText("Done Drawing");
+        done.setOnClickListener(this);
+        layout.addView(done,
+        		new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT,
+        				LayoutParams.WRAP_CONTENT));
 
         mPaint = new Paint();
         mPaint.setAntiAlias(true);
@@ -43,7 +74,7 @@ public class FingerPaint extends Activity
         mPaint.setStrokeWidth(12);
         
         mEmboss = new EmbossMaskFilter(new float[] { 1, 1, 1 },
-                                       0.4f, 6, 3.5f);
+        		0.4f, 6, 3.5f);
 
         mBlur = new BlurMaskFilter(8, BlurMaskFilter.Blur.NORMAL);
     }
@@ -136,6 +167,10 @@ public class FingerPaint extends Activity
             }
             return true;
         }
+
+        public Bitmap getBitmap() {
+        	return mBitmap;
+        }
     }
     
     private static final int COLOR_MENU_ID = Menu.FIRST;
@@ -206,4 +241,9 @@ public class FingerPaint extends Activity
         }
         return super.onOptionsItemSelected(item);
     }
+
+	@Override
+	public void onClick(View v) {
+		returnTurn(new DrawTurn(mDrawView.getBitmap()));
+	}
 }

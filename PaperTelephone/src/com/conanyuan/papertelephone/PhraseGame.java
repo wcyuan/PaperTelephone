@@ -13,7 +13,7 @@ public class PhraseGame extends GameImpl {
 		return new PhraseTurn();
 	}
 
-	protected int getLayoutView() {
+	public int getLayoutView() {
 		return R.layout.phrase_turn;
 	}
 
@@ -44,5 +44,4 @@ public class PhraseGame extends GameImpl {
 	};
 
 	/* -------- END Parcelable interface -------------- */
-
 }

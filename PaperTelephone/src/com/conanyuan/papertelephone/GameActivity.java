@@ -10,7 +10,7 @@ public class GameActivity extends Activity {
 	private IGame mGame;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Intent intent = getIntent();
 		mGame = intent
@@ -20,7 +20,7 @@ public class GameActivity extends Activity {
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.activity_game, menu);
+		//getMenuInflater().inflate(R.menu.activity_game, menu);
 		return true;
 	}
 
@@ -29,6 +29,14 @@ public class GameActivity extends Activity {
     	intent.putExtra(MainActivity.ArrayListFragment.GAME_MESSAGE, turn);
     	setResult(Activity.RESULT_OK, intent);
     	finish();
+	}
+
+	protected int nTurns() {
+		return mGame.nTurns();
+	}
+
+	protected IGame getGame() {
+		return mGame;
 	}
 
 	/*
