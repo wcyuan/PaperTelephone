@@ -58,8 +58,8 @@ public class FingerPaint extends Activity
 
     public class MyView extends View {
         
-        private static final float MINP = 0.25f;
-        private static final float MAXP = 0.75f;
+        //private static final float MINP = 0.25f;
+        //private static final float MAXP = 0.75f;
         
         private Bitmap  mBitmap;
         private Canvas  mCanvas;

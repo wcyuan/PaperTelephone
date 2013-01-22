@@ -9,10 +9,6 @@ public class PhraseGame extends GameImpl {
 		super();
 	}
 
-	public PhraseGame(Parcel in) {
-		super(in);
-	}
-
 	protected ITurn getNewTurn() {
 		return new PhraseTurn();
 	}
@@ -29,6 +25,12 @@ public class PhraseGame extends GameImpl {
 		return R.id.next_phrase;
 	}
 
+	/* -------- BEGIN Parcelable interface -------------- */
+
+	public PhraseGame(Parcel in) {
+		super(in);
+	}
+
 	public static final Parcelable.Creator<PhraseGame> CREATOR =
 		new Parcelable.Creator<PhraseGame>() {  
 		    
@@ -40,4 +42,7 @@ public class PhraseGame extends GameImpl {
 			return new PhraseGame[size];  
 		}
 	};
+
+	/* -------- END Parcelable interface -------------- */
+
 }

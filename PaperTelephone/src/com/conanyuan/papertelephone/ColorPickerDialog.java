@@ -20,6 +20,7 @@ import android.os.Bundle;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.*;
+import android.util.FloatMath;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -37,6 +38,7 @@ public class ColorPickerDialog extends Dialog {
         private Paint mCenterPaint;
         private final int[] mColors;
         private OnColorChangedListener mListener;
+        private RectF mRect;
         
         ColorPickerView(Context c, OnColorChangedListener l, int color) {
             super(c);
@@ -55,6 +57,8 @@ public class ColorPickerDialog extends Dialog {
             mCenterPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
             mCenterPaint.setColor(color);
             mCenterPaint.setStrokeWidth(5);
+
+            mRect = new RectF();
         }
         
         private boolean mTrackingCenter;
@@ -65,8 +69,8 @@ public class ColorPickerDialog extends Dialog {
             float r = CENTER_X - mPaint.getStrokeWidth()*0.5f;
             
             canvas.translate(CENTER_X, CENTER_X);
-            
-            canvas.drawOval(new RectF(-r, -r, r, r), mPaint);            
+            mRect.set(-r, -r, r, r);
+            canvas.drawOval(mRect, mPaint);            
             canvas.drawCircle(0, 0, CENTER_RADIUS, mCenterPaint);
             
             if (mTrackingCenter) {
@@ -96,6 +100,7 @@ public class ColorPickerDialog extends Dialog {
         private static final int CENTER_Y = 100;
         private static final int CENTER_RADIUS = 32;
 
+        /*
         private int floatToByte(float x) {
             int n = java.lang.Math.round(x);
             return n;
@@ -108,7 +113,8 @@ public class ColorPickerDialog extends Dialog {
             }
             return n;
         }
-        
+        */
+
         private int ave(int s, int d, float p) {
             return s + java.lang.Math.round(p * (d - s));
         }
@@ -136,6 +142,7 @@ public class ColorPickerDialog extends Dialog {
             return Color.argb(a, r, g, b);
         }
         
+        /*
         private int rotateColor(int color, float rad) {
             float deg = rad * 180 / 3.1415927f;
             int r = Color.red(color);
@@ -160,6 +167,7 @@ public class ColorPickerDialog extends Dialog {
             return Color.argb(Color.alpha(color), pinToByte(ir),
                               pinToByte(ig), pinToByte(ib));
         }
+         */
         
         private static final float PI = 3.1415926f;
 
@@ -167,7 +175,7 @@ public class ColorPickerDialog extends Dialog {
         public boolean onTouchEvent(MotionEvent event) {
             float x = event.getX() - CENTER_X;
             float y = event.getY() - CENTER_Y;
-            boolean inCenter = java.lang.Math.sqrt(x*x + y*y) <= CENTER_RADIUS;
+            boolean inCenter = FloatMath.sqrt(x*x + y*y) <= CENTER_RADIUS;
             
             switch (event.getAction()) {
                 case MotionEvent.ACTION_DOWN:
