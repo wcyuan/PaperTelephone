@@ -7,8 +7,8 @@ import android.widget.TextView;
 
 public class DrawGame extends GameImpl {
 
-	public DrawGame() {
-		super();
+	public DrawGame(int id, String dirname) {
+		super(id, dirname);
 	}
 
 	@Override
@@ -36,7 +36,7 @@ public class DrawGame extends GameImpl {
 
 	@Override
 	public int getLayoutView() {
-		if (nTurns() == 0) {
+		if (nTurns() % 2 == 0) {
 			return R.layout.draw_game_phrase;
 		} else {
 			// sort of a hack...
@@ -46,7 +46,7 @@ public class DrawGame extends GameImpl {
 
 	@Override
 	protected int getReadViewId() {
-		if (nTurns() == 0) {
+		if (nTurns() % 2 == 0) {
 			return R.id.prev_drawing;
 		} else {
 			return R.id.prev_phrase;

@@ -5,8 +5,8 @@ import android.os.Parcelable;
 
 public class PhraseGame extends GameImpl {
 
-	public PhraseGame() {
-		super();
+	public PhraseGame(int id, String dirname) {
+		super(id, dirname);
 	}
 
 	protected ITurn getNewTurn() {

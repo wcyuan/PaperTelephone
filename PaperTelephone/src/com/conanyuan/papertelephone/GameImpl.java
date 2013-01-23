@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.http.impl.cookie.DateParseException;
+
 //import android.app.Activity;
 import android.os.Parcel;
 import android.view.View;
@@ -18,13 +20,18 @@ import android.widget.TextView;
  */
 public abstract class GameImpl implements IGame {
 	private List<ITurn> mTurns;
+	private int mGameId;
+	private String mDirname;
 
-	protected GameImpl() {
+	protected GameImpl(int gameId, String dirname) {
 		mTurns = new ArrayList<ITurn>();
+		mGameId = gameId;
+		mDirname = dirname;
 	}
 
 	@Override
 	public void addTurn(ITurn turn) {
+		turn.setGameInfo(mGameId, mTurns.size(), mDirname);
 		mTurns.add(turn);
 	}
 
@@ -59,7 +66,7 @@ public abstract class GameImpl implements IGame {
 			file.delete();
 		}
 		for (int ii = 0; ii < mTurns.size(); ii++) {
-			mTurns.get(ii).toFile(new File(dir, "Turn-" + ii));
+			mTurns.get(ii).toFile();
 		}
 	}
 
@@ -67,13 +74,14 @@ public abstract class GameImpl implements IGame {
 	 * @see com.conanyuan.papertelephone.IGame#fromFile(java.io.File)
 	 */
 	@Override
-	public void fromDisk(File dir) throws IOException {
+	public void fromDisk(File dir) throws IOException, DateParseException {
 		File[] files = dir.listFiles();
 		Arrays.sort(files);
 		for (File file : files) {
 			ITurn turn = getNewTurn();
-			turn.fromFile(file);
-			mTurns.add(turn);
+			if (turn.fromFile(file.toString())) {
+				mTurns.add(turn);
+			}
 		}
 	}
 
@@ -107,6 +115,8 @@ public abstract class GameImpl implements IGame {
 	/* -------- BEGIN Parcelable interface -------------- */
 	
 	protected GameImpl(Parcel in) {
+		mGameId = in.readInt();
+		mDirname = in.readString();
 		mTurns = new ArrayList<ITurn>();
 		in.readList(mTurns, getClass().getClassLoader());
 	}
@@ -118,6 +128,8 @@ public abstract class GameImpl implements IGame {
 
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeInt(mGameId);
+		dest.writeString(mDirname);
 		dest.writeList(mTurns);
 	}
 

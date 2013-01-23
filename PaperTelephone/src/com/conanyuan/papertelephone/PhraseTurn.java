@@ -2,7 +2,6 @@ package com.conanyuan.papertelephone;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,6 +21,10 @@ public class PhraseTurn extends TurnImpl {
 
 	public PhraseTurn() {
 		super();
+	}
+
+	public PhraseTurn(int gameId, int nth) {
+		super(gameId, nth);
 	}
 
 	@Override
@@ -49,8 +52,8 @@ public class PhraseTurn extends TurnImpl {
 	 * @see com.conanyuan.papertelephone.ITurn#toFile(java.lang.String)
 	 */
 	@Override
-	public void toFile(File file) throws IOException {
-		FileOutputStream fos = new FileOutputStream(file);
+	public void contentToFile() throws IOException {
+		FileOutputStream fos = new FileOutputStream(contentFilename());
 		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
 		BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
 		try {
@@ -64,8 +67,8 @@ public class PhraseTurn extends TurnImpl {
 	 * @see com.conanyuan.papertelephone.ITurn#fromFile(java.lang.String)
 	 */
 	@Override
-	public void fromFile(File file) throws IOException {
-		FileInputStream fis = new FileInputStream(file);
+	public boolean contentFromFile() throws IOException {
+		FileInputStream fis = new FileInputStream(contentFilename());
 		InputStreamReader inputStreamReader = new InputStreamReader(fis);
 		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 		try {
@@ -78,6 +81,7 @@ public class PhraseTurn extends TurnImpl {
 		} finally {
 			bufferedReader.close();
 		}
+		return true;
 	}
 
 	/* -------- BEGIN Parcelable interface -------------- */
@@ -94,16 +98,16 @@ public class PhraseTurn extends TurnImpl {
 	}
 
 	public static final Parcelable.Creator<PhraseTurn> CREATOR =
-		new Parcelable.Creator<PhraseTurn>() {  
-		    
+		new Parcelable.Creator<PhraseTurn>() {
+
 		public PhraseTurn createFromParcel(Parcel in) {  
 			return new PhraseTurn(in);  
 		}
-	   
+
 		public PhraseTurn[] newArray(int size) {
 			return new PhraseTurn[size];  
 		}
-	}; 
+	};
 
 	/* -------- END Parcelable interface -------------- */
 }

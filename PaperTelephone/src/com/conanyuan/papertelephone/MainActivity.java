@@ -151,7 +151,7 @@ public class MainActivity extends FragmentActivity {
 			button.setOnClickListener(new OnClickListener() {
 				@SuppressWarnings("unchecked")
 				public void onClick(View v) {
-					mGames.add(new DrawGame());
+					mGames.add(new DrawGame(mGames.size(), getActivity().getFilesDir().toString()));
 					// Have to cast to an ArrayAdapter in order to call
 					// notifyDataSetChanged.
 					// And if we don't call notifyDataSetChanged, then the view

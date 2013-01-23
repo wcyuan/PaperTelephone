@@ -1,8 +1,9 @@
 package com.conanyuan.papertelephone;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.Date;
+
+import org.apache.http.impl.cookie.DateParseException;
 
 import android.app.Activity;
 import android.os.Parcelable;
@@ -15,7 +16,11 @@ public interface ITurn extends Parcelable {
 
 	public abstract void setEditView(final GameActivity a, IGame g, int viewId);
 
-	public void toFile(File file) throws IOException;
+	public void toFile() throws IOException;
 
-	public void fromFile(File file) throws IOException;
+	public boolean fromFile(String filename) throws IOException, DateParseException;
+
+	public void delete() throws IOException;
+
+	void setGameInfo(int gameId, int nth, String dirname);
 }

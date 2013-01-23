@@ -8,6 +8,25 @@ public class User {
 	private String mEmail;
 	private static Map<String, User> Users = new HashMap<String, User>();
 
+	public static User find(String string) {
+		int sep = string.indexOf("\n");
+		int len = string.length();
+		String name;
+		String email;
+		if (sep < 0) {
+			name = string;
+			email = "";
+		} else {
+			name = string.substring(0, sep);
+			if (len >= sep) {
+				email = string.substring(sep+1);
+			} else {
+				email = "";
+			}
+		}
+		return find(name, email);
+	}
+
 	public static User find(String name, String email) {
 		if (Users.containsKey(email)) {
 			return Users.get(email);
@@ -30,5 +49,14 @@ public class User {
 
 	public String getEmail() {
 		return mEmail;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return mName + "\n" + mEmail + "\n";
 	}
 }
