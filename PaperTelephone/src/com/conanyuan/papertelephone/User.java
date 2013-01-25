@@ -56,7 +56,6 @@ public class User {
 	 */
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
 		return mName + "\n" + mEmail + "\n";
 	}
 }

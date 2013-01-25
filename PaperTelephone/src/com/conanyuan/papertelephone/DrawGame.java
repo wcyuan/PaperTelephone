@@ -13,7 +13,6 @@ public class DrawGame extends GameImpl {
 
 	@Override
 	protected ITurn getNewTurn() {
-		// TODO Auto-generated method stub
 		if (nTurns() % 2 == 0) {
 			return new PhraseTurn();
 		} else {
