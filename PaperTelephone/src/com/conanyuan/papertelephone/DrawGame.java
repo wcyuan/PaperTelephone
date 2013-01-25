@@ -31,6 +31,7 @@ public class DrawGame extends GameImpl {
 			a.findViewById(getEditViewId()).setVisibility(View.GONE);
 			TextView next_label = (TextView)a.findViewById(R.id.next_turn_label);
 			next_label.setText("Draw:");
+			a.findViewById(getDoneId()).setVisibility(View.GONE);
 		}
 	}
 
@@ -56,6 +57,11 @@ public class DrawGame extends GameImpl {
 	@Override
 	protected int getEditViewId() {
 		return R.id.next_phrase;
+	}
+
+	@Override
+	protected int getDoneId() {
+		return R.id.button_done;
 	}
 
 	/* -------- BEGIN Parcelable interface -------------- */

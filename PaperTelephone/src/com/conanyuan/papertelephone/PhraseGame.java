@@ -13,16 +13,24 @@ public class PhraseGame extends GameImpl {
 		return new PhraseTurn();
 	}
 
+	@Override
 	public int getLayoutView() {
 		return R.layout.phrase_turn;
 	}
 
+	@Override
 	protected int getReadViewId() {
 		return R.id.prev_phrase;
 	}
 
+	@Override
 	protected int getEditViewId() {
 		return R.id.next_phrase;
+	}
+
+	@Override
+	protected int getDoneId() {
+		return R.id.button_done;
 	}
 
 	/* -------- BEGIN Parcelable interface -------------- */

@@ -41,6 +41,8 @@ public abstract class GameImpl implements IGame {
 
 	abstract protected int getEditViewId();
 
+	abstract protected int getDoneId();
+
 	@Override
 	public void setNextTurnView(final GameActivity a) {
 		a.setContentView(getLayoutView());
@@ -53,7 +55,7 @@ public abstract class GameImpl implements IGame {
 		} else {
 			lastTurn.setReadView(a, getReadViewId());
 		}
-		getNewTurn().setEditView(a, this, getEditViewId());
+		getNewTurn().setEditView(a, this, getEditViewId(), getDoneId());
 	}
 
 	/* (non-Javadoc)

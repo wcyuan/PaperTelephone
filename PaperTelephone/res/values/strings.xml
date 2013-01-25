@@ -10,5 +10,6 @@
     <string name="response">Response</string>
     <string name="previous_turn_">Previous Turn:</string>
     <string name="prev_turn">Previous Turn Image</string>
+    <string name="done">Done</string>
 
 </resources>

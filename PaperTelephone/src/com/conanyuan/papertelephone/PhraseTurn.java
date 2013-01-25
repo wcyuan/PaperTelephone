@@ -11,10 +11,11 @@ import java.io.OutputStreamWriter;
 import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
-import android.view.KeyEvent;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.TextView.OnEditorActionListener;
 
 public class PhraseTurn extends TurnImpl {
 	private String mPhrase;
@@ -34,16 +35,16 @@ public class PhraseTurn extends TurnImpl {
 	}
 
 	@Override
-	public void setEditView(final GameActivity a, final IGame g, int viewId) {
-		EditText next = (EditText) a.findViewById(viewId);
+	public void setEditView(final GameActivity a, final IGame g, int contentId, int doneId) {
+		final EditText next = (EditText) a.findViewById(contentId);
+		Button done = (Button) a.findViewById(doneId);
 		final PhraseTurn turn = this;
-		next.setOnEditorActionListener(new OnEditorActionListener() {
+		done.setOnClickListener(new OnClickListener() {
 			@Override
-			public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-		    	mPhrase = v.getText().toString();
+			public void onClick(View v) {
+		    	mPhrase = next.getText().toString();
 		    	g.addTurn(turn);
 		    	a.returnTurn(turn);
-		    	return true;
 			}
 		});
 	}

@@ -14,7 +14,7 @@ public interface ITurn extends Parcelable {
 
 	public abstract void setReadView(final Activity a, int viewId);
 
-	public abstract void setEditView(final GameActivity a, IGame g, int viewId);
+	public abstract void setEditView(final GameActivity a, IGame g, int contentId, int doneId);
 
 	public void toFile() throws IOException;
 

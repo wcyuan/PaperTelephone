@@ -15,9 +15,12 @@
 
     <TextView
         android:id="@+id/prev_phrase"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:background="@android:color/darker_gray"
+        android:maxLines="10"
+        android:minLines="3"
+        android:scrollbars="horizontal|vertical"
         android:text=""
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -32,6 +35,15 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:ems="10"
-        android:hint="@string/phrase_hint" />
+        android:hint="@string/phrase_hint"
+        android:maxLines="10"
+        android:minLines="3"
+        android:scrollbars="horizontal|vertical" />
+
+    <Button
+        android:id="@+id/button_done"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/done" />
 
 </LinearLayout>

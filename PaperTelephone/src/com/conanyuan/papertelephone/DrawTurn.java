@@ -77,7 +77,7 @@ public class DrawTurn extends TurnImpl {
 	}
 
 	@Override
-	public void setEditView(GameActivity a, IGame g, int viewId) {
+	public void setEditView(GameActivity a, IGame g, int contentId, int doneId) {
 		// NOP: rely on the activity
 	}
 
