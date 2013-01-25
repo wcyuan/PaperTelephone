@@ -99,9 +99,9 @@ public class DrawGameActivity extends GameActivity
         
         public MyView(Context c) {
             super(c);
-            
-            mBitmap = Bitmap.createBitmap(320, 480, Bitmap.Config.ARGB_8888);
-            mCanvas = new Canvas(mBitmap);
+
+            //mBitmap = Bitmap.createBitmap(320, 480, Bitmap.Config.ARGB_8888);
+            //mCanvas = new Canvas(mBitmap);
             mPath = new Path();
             mBitmapPaint = new Paint(Paint.DITHER_FLAG);
         }
@@ -109,6 +109,8 @@ public class DrawGameActivity extends GameActivity
         @Override
         protected void onSizeChanged(int w, int h, int oldw, int oldh) {
             super.onSizeChanged(w, h, oldw, oldh);
+            mBitmap = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+            mCanvas = new Canvas(mBitmap);
         }
         
         @Override
