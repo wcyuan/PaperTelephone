@@ -29,9 +29,10 @@ public final class R {
     }
     public static final class layout {
         public static final int draw_game_phrase=0x7f030000;
-        public static final int fragment_pager_list=0x7f030001;
-        public static final int main_layout=0x7f030002;
-        public static final int phrase_turn=0x7f030003;
+        public static final int fragment_gamelist=0x7f030001;
+        public static final int fragment_list=0x7f030002;
+        public static final int main_layout=0x7f030003;
+        public static final int phrase_turn=0x7f030004;
     }
     public static final class menu {
         public static final int activity_game=0x7f060000;

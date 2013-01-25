@@ -14,7 +14,7 @@ public class GameActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		Intent intent = getIntent();
 		mGame = intent
-				.getParcelableExtra(MainActivity.ArrayListFragment.GAME_MESSAGE);
+				.getParcelableExtra(MainActivity.LocalGameListFragment.GAME_MESSAGE);
 		mGame.setNextTurnView(this);
 	}
 	
@@ -26,7 +26,7 @@ public class GameActivity extends Activity {
 
 	public void returnTurn(ITurn turn) {
     	Intent intent = new Intent();
-    	intent.putExtra(MainActivity.ArrayListFragment.GAME_MESSAGE, turn);
+    	intent.putExtra(MainActivity.LocalGameListFragment.GAME_MESSAGE, turn);
     	setResult(Activity.RESULT_OK, intent);
     	finish();
 	}

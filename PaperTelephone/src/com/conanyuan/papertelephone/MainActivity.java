@@ -1,7 +1,7 @@
 package com.conanyuan.papertelephone;
 
+import java.io.File;
 import java.util.ArrayList;
-import java.util.List;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -23,28 +23,20 @@ import android.widget.ListView;
 public class MainActivity extends FragmentActivity {
 	private MyAdapter mAdapter;
 	private ViewPager mPager;
-	private ArrayList<IGame> mLocalGames;
-	private ArrayList<IGame> mNetworkGames;
-	private ArrayList<IGame> mCompletedGames;
+	private ArrayList<IGame> mLocalGames = new ArrayList<IGame>();
+	//private ArrayList<IGame> mNetworkGames;
+	private ArrayList<IGame> mCompletedGames = new ArrayList<IGame>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_layout);
 
-		mLocalGames = new ArrayList<IGame>();
-		mNetworkGames = new ArrayList<IGame>();
-		mCompletedGames = new ArrayList<IGame>();
+		//mLocalGames = new ArrayList<IGame>();
+		//mNetworkGames = new ArrayList<IGame>();
+		//mCompletedGames = new ArrayList<IGame>();
 
-		List<ArrayList<IGame>> gameList = new ArrayList<ArrayList<IGame>>();
-		gameList.add(mLocalGames);
-		gameList.add(mNetworkGames);
-		gameList.add(mCompletedGames);
-		List<String> names = new ArrayList<String>();
-		names.add(Page.LOCAL_GAMES.getName());
-		names.add(Page.NETWORK_GAMES.getName());
-		names.add(Page.COMPLETED_GAMES.getName());
-		mAdapter = new MyAdapter(getSupportFragmentManager(), gameList, names);
+		mAdapter = new MyAdapter(getSupportFragmentManager(), mLocalGames, mCompletedGames);
 
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
@@ -59,64 +51,61 @@ public class MainActivity extends FragmentActivity {
 		super.onPause();
 	}
 
-	public static enum Page {
-		LOCAL_GAMES("Local Games"), NETWORK_GAMES("Network Games"), COMPLETED_GAMES(
-				"Completed Games");
-
-		private final String name;
-
-		Page(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		private static final int size = Page.values().length;
-
-		public static int size() {
-			return size;
-		}
-	}
-
 	public static class MyAdapter extends FragmentPagerAdapter {
-		private List<ArrayList<IGame>> mGameLists;
-		private List<String> mNames;
+		private ArrayList<IGame> myLocalGames;
+		private ArrayList<IGame> myCompletedGames;
 
 		public MyAdapter(FragmentManager fragmentManager,
-				List<ArrayList<IGame>> gameLists, List<String> names) {
+				ArrayList<IGame> local, ArrayList<IGame> completed) {
 			super(fragmentManager);
-			mGameLists = gameLists;
-			mNames = names;
+			myLocalGames = local;
+			myCompletedGames = completed;
 		}
 
 		@Override
 		public int getCount() {
-			return Page.size();
+			return 3;
 		}
 
 		@Override
 		public Fragment getItem(int position) {
-			return ArrayListFragment.newInstance(mGameLists.get(position));
+			switch (position) {
+			case 0:
+				return LocalGameListFragment.newInstance(myLocalGames);
+			case 1:
+				return LocalGameListFragment.newInstance(myCompletedGames);
+			case 2:
+				return FileListFragment.newInstance();
+			default:
+				return null;
+			}
 		}
 
 		@Override
 		public CharSequence getPageTitle(int position) {
-			return mNames.get(position);
+			switch (position) {
+			case 0:
+				return "Local Games";
+			case 1:
+				return "Completed Games";
+			case 2:
+				return "Files";
+			default:
+				return "Unknown";
+			}
 		}
 	}
 
-	public static class ArrayListFragment extends ListFragment {
+	public static class LocalGameListFragment extends ListFragment {
 		static final String GAME_MESSAGE = "com.conanyuan.papertelephone.GAME";
 		private ArrayList<IGame> mGames;
 
 		/**
-		 * Create a new instance of ArrayListFragment, providing "games" as an
+		 * Create a new instance of LocalGameListFragment, providing "games" as an
 		 * argument.
 		 */
-		static ArrayListFragment newInstance(ArrayList<IGame> games) {
-			ArrayListFragment f = new ArrayListFragment();
+		static LocalGameListFragment newInstance(ArrayList<IGame> games) {
+			LocalGameListFragment f = new LocalGameListFragment();
 
 			Bundle args = new Bundle();
 			args.putParcelableArrayList("games", games);
@@ -126,7 +115,7 @@ public class MainActivity extends FragmentActivity {
 		}
 
 		/**
-		 * When creating, retrieve this instance's number from its arguments.
+		 * When creating, retrieve the games from its arguments.
 		 */
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -143,7 +132,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
-			View v = inflater.inflate(R.layout.fragment_pager_list, container,
+			View v = inflater.inflate(R.layout.fragment_gamelist, container,
 					false);
 
 			// Watch for requests to add a new game.
@@ -193,6 +182,68 @@ public class MainActivity extends FragmentActivity {
 			}
 			mGames.get(requestCode).addTurn((ITurn)data.getParcelableExtra(GAME_MESSAGE));
 			((ArrayAdapter<IGame>) getListAdapter()).notifyDataSetChanged();
+		}
+	}
+
+	public static class FileListFragment extends ListFragment {
+		private ArrayList<String> mFilenames = new ArrayList<String>();
+
+		/**
+		 * Create a new instance of LocalGameListFragment
+		 */
+		static FileListFragment newInstance() {
+			FileListFragment fragment = new FileListFragment();
+			//fragment.mFilenames = new ArrayList<String>();
+			return fragment;
+		}
+
+		/**
+		 * The Fragment's UI is just a simple text view showing its instance
+		 * number.
+		 */
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View v = inflater.inflate(R.layout.fragment_list, container,
+					false);
+			return v;
+		}
+
+		@Override
+		public void onActivityCreated(Bundle savedInstanceState) {
+			super.onActivityCreated(savedInstanceState);
+			setListAdapter(new ArrayAdapter<String>(getActivity(),
+					android.R.layout.simple_list_item_1, mFilenames));
+		}
+
+		/* (non-Javadoc)
+		 * @see android.support.v4.app.Fragment#onResume()
+		 */
+		@Override
+		public void onResume() {
+			setFileList();
+			super.onResume();
+		}
+
+		private ArrayList<String> traverse(File f) {
+			Log.i("traverse", "file " + f.toString());
+			ArrayList<String> list = new ArrayList<String>();
+			if (f.isDirectory()) {
+				for (File content : f.listFiles()) {
+					list.addAll(traverse(content));
+				}
+			} else {
+				list.add(f.toString());
+			}
+			return list;
+		}
+
+		@SuppressWarnings("unchecked")
+		private void setFileList() {
+			Log.i("setFileList", "called");
+			mFilenames.clear();
+			mFilenames.addAll(traverse(getActivity().getFilesDir()));
+			((ArrayAdapter<String>) getListAdapter()).notifyDataSetChanged();
 		}
 	}
 }

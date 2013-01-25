@@ -19,6 +19,7 @@
              Here is the list. Since we are using a ListActivity, we
              have to call it "@android:id/list" so ListActivity will
              find it
+
         -->
 
         <ListView
