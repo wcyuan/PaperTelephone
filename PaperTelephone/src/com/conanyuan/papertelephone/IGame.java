@@ -20,4 +20,8 @@ public interface IGame extends Parcelable {
 	int nTurns();
 
 	int getLayoutView();
+
+	int getGameId();
+	
+	String getRootdir();
 }

@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.http.impl.cookie.DateParseException;
 
+import com.conanyuan.papertelephone.TurnImpl.TurnParseException;
+
 //import android.app.Activity;
 import android.os.Parcel;
 import android.view.View;
@@ -19,23 +21,50 @@ import android.widget.TextView;
  * @author Yuan
  */
 public abstract class GameImpl implements IGame {
-	private List<ITurn> mTurns;
-	private int mGameId;
-	private String mDirname;
+	private final List<ITurn> mTurns;
+	private final int mGameId;
+	private final String mRootdir;
 
 	protected GameImpl(int gameId, String dirname) {
 		mTurns = new ArrayList<ITurn>();
 		mGameId = gameId;
-		mDirname = dirname;
+		mRootdir = dirname;
+	}
+
+	/* Gettors for Turn */
+
+	public static String gameDir(int id) {
+		return "Game-" + id;
+	}
+
+	@Override
+	public int nTurns() {
+		return mTurns.size();
+	}
+
+	@Override
+	public int getGameId() {
+		return mGameId;
+	}
+
+	@Override
+	public String getRootdir() {
+		return mRootdir;
 	}
 
 	@Override
 	public void addTurn(ITurn turn) {
-		turn.setGameInfo(mGameId, mTurns.size(), mDirname);
+		// TODO: assert that turn.gameId == id
+		// assert that turn.nth == mTurns.size()
+		// make sure the type matches
 		mTurns.add(turn);
 	}
 
-	abstract protected ITurn getNewTurn();
+	/* Gettors for GameActivity */
+
+	abstract protected ITurn getNewTurn(IGame game);
+
+	abstract protected ITurn getNewTurn(File dir) throws TurnParseException, IOException, DateParseException;
 
 	abstract protected int getReadViewId();
 
@@ -55,16 +84,12 @@ public abstract class GameImpl implements IGame {
 		} else {
 			lastTurn.setReadView(a, getReadViewId());
 		}
-		getNewTurn().setEditView(a, this, getEditViewId(), getDoneId());
-	}
-
-	public static String gameDir(int id) {
-		return "Game-" + id;
+		getNewTurn(this).setEditView(a, this, getEditViewId(), getDoneId());
 	}
 
 	/* (non-Javadoc)
 	 * @see com.conanyuan.papertelephone.IGame#toFile(java.io.File)
-	 * TODO:
+	 * TODO: GameImpl.toDisk
 	 * only write turns to disk that aren't already there
 	 * don't delete files before writing
 	 * don't need to be given the file to write to
@@ -81,9 +106,9 @@ public abstract class GameImpl implements IGame {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.conanyuan.papertelephone.IGame#fromFile(java.io.File)
+	 * @see com.conanyuan.papertelephone.IGame#fromDisk(java.io.File)
 	 * 
-	 * TODO:
+	 * TODO: GameImpl.fromDisk
 	 * given a directory:
 	 * parse the name of the directory to get the game id
 	 * if the name doesn't match, return false
@@ -104,9 +129,13 @@ public abstract class GameImpl implements IGame {
 		File[] files = dir.listFiles();
 		Arrays.sort(files);
 		for (File file : files) {
-			ITurn turn = getNewTurn();
-			if (turn.fromFile(file)) {
+			ITurn turn;
+			try {
+				turn = getNewTurn(file);
 				mTurns.add(turn);
+			} catch (TurnParseException e) {
+				// TODO: delete invalid turn directories
+				e.printStackTrace();
 			}
 		}
 	}
@@ -123,11 +152,6 @@ public abstract class GameImpl implements IGame {
 		}
 	}
 
-	@Override
-	public int nTurns() {
-		return mTurns.size();
-	}
-
 	protected ITurn getPrevTurn() {
 		int nturns = mTurns.size();
 
@@ -142,7 +166,7 @@ public abstract class GameImpl implements IGame {
 	
 	protected GameImpl(Parcel in) {
 		mGameId = in.readInt();
-		mDirname = in.readString();
+		mRootdir = in.readString();
 		mTurns = new ArrayList<ITurn>();
 		in.readList(mTurns, getClass().getClassLoader());
 	}
@@ -155,7 +179,7 @@ public abstract class GameImpl implements IGame {
 	@Override
 	public void writeToParcel(Parcel dest, int flags) {
 		dest.writeInt(mGameId);
-		dest.writeString(mDirname);
+		dest.writeString(mRootdir);
 		dest.writeList(mTurns);
 	}
 

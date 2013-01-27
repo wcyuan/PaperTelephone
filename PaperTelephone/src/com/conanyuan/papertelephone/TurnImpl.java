@@ -18,27 +18,24 @@ import android.os.Parcel;
 public abstract class TurnImpl implements ITurn {
 
 	private User mUser;
-	private Date mTimestamp;
-	private int mGameId;
-	private int mNth;
-	private String mDirname;
+	private final Date mTimestamp;
+	private final int mGameId;
+	private final int mNth;
+	private final String mRootdir;
 
-	protected TurnImpl() {
-		super();
+	protected TurnImpl(int gameId, int nth, String rootdir) {
 		mTimestamp = new Date();
-	}
-
-	protected TurnImpl(int gameId, int nth) {
-		this();
 		mGameId = gameId;
 		mNth = nth;
+		mRootdir = rootdir;
 	}
 
-	@Override
-	public void setGameInfo(int gameId, int nth, String dirname) {
-		mGameId = gameId;
-		mNth = nth;
-		mDirname = dirname;
+	protected TurnImpl(IGame game) {
+		this(game.getGameId(), game.nTurns(), game.getRootdir());
+	}
+
+	public static class TurnParseException extends Exception {
+		private static final long serialVersionUID = -5372762648389317288L;
 	}
 
 	public User getUser() {
@@ -57,7 +54,7 @@ public abstract class TurnImpl implements ITurn {
 	/* -------- BEGIN to/from file -------------- */
 
 	private String getdir(boolean shouldCreate) {
-		String dir = mDirname + "/" + GameImpl.gameDir(mGameId) + "/Turn-" + mNth;
+		String dir = mRootdir + "/" + GameImpl.gameDir(mGameId) + "/Turn-" + mNth;
 		if (shouldCreate) {
 			(new File(dir)).mkdirs();
 		}
@@ -82,28 +79,11 @@ public abstract class TurnImpl implements ITurn {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.conanyuan.papertelephone.ITurn#fromFile(java.lang.String)
-	 * 
-	 * TODO:
-	 * given the name of a turn directory:
-	 * make sure the directory has the right form of name, otherwise return false
-	 * Make sure a metadata file and a content file
-	 *   otherwise, return false
-	 * delete any other files
-	 * try to read both metadata and content
-	 */
-	@Override
-	public boolean fromFile(File dir) throws IOException,
-			DateParseException {
-		return metadataFromFile(dir + "/Data") && contentFromFile();
-	}
-
-	/* (non-Javadoc)
 	 * @see com.conanyuan.papertelephone.ITurn#delete()
 	 */
 	@Override
 	public void delete() throws IOException {
-		// TODO Auto-generated method stub
+		// TODO TurnImpl.delete
 	}
 
 	/* (non-Javadoc)
@@ -138,57 +118,68 @@ public abstract class TurnImpl implements ITurn {
 			bufferedWriter.newLine();
 			bufferedWriter.write(Integer.toString(mNth));
 			bufferedWriter.newLine();
-			bufferedWriter.write(mDirname);
+			bufferedWriter.write(mRootdir);
 			bufferedWriter.newLine();
 		} finally {
 			bufferedWriter.close();
 		}
 	}
 
-	/* (non-Javadoc)
+	protected abstract void contentToFile() throws IOException;
+
+	protected abstract boolean contentFromFile() throws IOException;
+
+	/**
+	 * Wish we could use JSON, but the JsonReader/Writer aren't available until API 11
+	 * 
+	 * (non-Javadoc)
 	 * @see com.conanyuan.papertelephone.ITurn#fromFile(java.lang.String)
 	 * 
-	 * Wish we could use JSON, but the JsonReader/Writer aren't available until API 11
+	 * TODO: TurnImpl ctor
+	 * given the name of a turn directory:
+	 * make sure the directory has the right form of name, otherwise return false
+	 * Make sure a metadata file and a content file
+	 *   otherwise, return false
+	 * delete any other files
+	 * try to read both metadata and content
 	 */
-	private boolean metadataFromFile(String filename) throws IOException, DateParseException {
-		FileInputStream fis = new FileInputStream(filename);
+	protected TurnImpl(File dir) throws TurnParseException, IOException, DateParseException {
+		FileInputStream fis = new FileInputStream(dir + "/Data");
 		InputStreamReader inputStreamReader = new InputStreamReader(fis);
 		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 		try {
 			String line;
 			if (null == (line = bufferedReader.readLine())) {
-				return false;
+				throw new TurnParseException();
 			}
 			if (line == "USER") {
 				mUser = User.find(bufferedReader.readLine());
 			}
 			if (null == (line = bufferedReader.readLine())) {
-				return false;
+				throw new TurnParseException();
 			}
 			if (line == "TIMESTAMP") {
 				mTimestamp = DateUtils.parseDate(bufferedReader.readLine());
+			} else {
+				mTimestamp = new Date();
 			}
 			if (null == (line = bufferedReader.readLine())) {
-				return false;
+				throw new TurnParseException();
 			}
 			mGameId = Integer.parseInt(line);
 			if (null == (line = bufferedReader.readLine())) {
-				return false;
+				throw new TurnParseException();
 			}
 			mNth = Integer.parseInt(line);
 			if (null == (line = bufferedReader.readLine())) {
-				return false;
+				throw new TurnParseException();
 			}
-			mDirname = line;
+			mRootdir = line;
 		} finally {
 			bufferedReader.close();
 		}
-		return true;
+		contentFromFile();
 	}
-
-	protected abstract void contentToFile() throws IOException;
-
-	protected abstract boolean contentFromFile() throws IOException;
 
 	/* -------- END to/from file -------------- */
 
@@ -203,7 +194,7 @@ public abstract class TurnImpl implements ITurn {
 		}
 		mGameId = in.readInt();
 		mNth = in.readInt();
-		mDirname = in.readString();
+		mRootdir = in.readString();
 	}
 
 	@Override
@@ -223,7 +214,7 @@ public abstract class TurnImpl implements ITurn {
 		}
 		dest.writeInt(mGameId);
 		dest.writeInt(mNth);
-		dest.writeString(mDirname);
+		dest.writeString(mRootdir);
 	}
 
 	/* -------- END Parcelable interface -------------- */

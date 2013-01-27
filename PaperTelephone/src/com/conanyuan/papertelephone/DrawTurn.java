@@ -1,7 +1,10 @@
 package com.conanyuan.papertelephone;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import org.apache.http.impl.cookie.DateParseException;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -14,21 +17,16 @@ import android.widget.ImageView;
 public class DrawTurn extends TurnImpl {
 	private Bitmap mBitmap;
 
-	public DrawTurn() {
-		super();
+	public DrawTurn(IGame game) {
+		super(game);
 	}
 
-	public DrawTurn(Bitmap bm) {
-		this();
-		mBitmap = bm;
+	public DrawTurn(File dir) throws TurnParseException, IOException, DateParseException {
+		super(dir);
 	}
 
-	public DrawTurn(int gameId, int nth) {
-		super(gameId, nth);
-	}
-
-	public DrawTurn(Bitmap bm, int gameId, int nth) {
-		this(gameId, nth);
+	public DrawTurn(IGame game, Bitmap bm) {
+		super(game);
 		mBitmap = bm;
 	}
 

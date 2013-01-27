@@ -1,5 +1,12 @@
 package com.conanyuan.papertelephone;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.http.impl.cookie.DateParseException;
+
+import com.conanyuan.papertelephone.TurnImpl.TurnParseException;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -9,8 +16,15 @@ public class PhraseGame extends GameImpl {
 		super(id, dirname);
 	}
 
-	protected ITurn getNewTurn() {
-		return new PhraseTurn();
+	@Override
+	protected ITurn getNewTurn(IGame game) {
+		return new PhraseTurn(this);
+	}
+
+	@Override
+	protected ITurn getNewTurn(File dir) throws TurnParseException,
+			IOException, DateParseException {
+		return new PhraseTurn(dir);
 	}
 
 	@Override

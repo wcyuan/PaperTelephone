@@ -47,7 +47,7 @@ public class MainActivity extends FragmentActivity {
 	 */
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
+		// TODO MainActivity.onPause
 		super.onPause();
 	}
 
