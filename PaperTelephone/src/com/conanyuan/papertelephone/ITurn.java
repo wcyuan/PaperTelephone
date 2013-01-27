@@ -1,5 +1,6 @@
 package com.conanyuan.papertelephone;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
@@ -18,7 +19,7 @@ public interface ITurn extends Parcelable {
 
 	public void toFile() throws IOException;
 
-	public boolean fromFile(String filename) throws IOException, DateParseException;
+	public boolean fromFile(File dir) throws IOException, DateParseException;
 
 	public void delete() throws IOException;
 

@@ -83,7 +83,7 @@ public class DrawTurn extends TurnImpl {
 
 	@Override
 	protected void contentToFile() throws IOException {
-		String fn = contentFilename();
+		String fn = contentFilename(true);
 		Log.i("DrawTurn", "writing bitmap to " + fn);
 		FileOutputStream out = new FileOutputStream(fn);
 		mBitmap.compress(Bitmap.CompressFormat.PNG, 100, out);
@@ -92,7 +92,7 @@ public class DrawTurn extends TurnImpl {
 
 	@Override
 	protected boolean contentFromFile() throws IOException {
-		String fn = contentFilename();
+		String fn = contentFilename(false);
 		Log.i("DrawTurn", "reading bitmap from " + fn);
 		mBitmap = BitmapFactory.decodeFile(fn);
 		return true;

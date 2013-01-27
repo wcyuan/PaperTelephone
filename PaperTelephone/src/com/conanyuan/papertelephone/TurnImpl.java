@@ -2,6 +2,7 @@ package com.conanyuan.papertelephone;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -55,12 +56,20 @@ public abstract class TurnImpl implements ITurn {
 
 	/* -------- BEGIN to/from file -------------- */
 
-	protected String metadataFilename() {
-		return mDirname + "/Turn-" + mGameId + "." + mNth;
+	private String getdir(boolean shouldCreate) {
+		String dir = mDirname + "/" + GameImpl.gameDir(mGameId) + "/Turn-" + mNth;
+		if (shouldCreate) {
+			(new File(dir)).mkdirs();
+		}
+		return dir;
 	}
 
-	protected String contentFilename() {
-		return mDirname + "/TurnContent-" + mGameId + "." + mNth;
+	protected String metadataFilename(boolean shouldCreate) {
+		return getdir(shouldCreate) + "/Data";
+	}
+
+	protected String contentFilename(boolean shouldCreate) {
+		return getdir(shouldCreate) + "/Content";
 	}
 
 	/* (non-Javadoc)
@@ -74,11 +83,19 @@ public abstract class TurnImpl implements ITurn {
 
 	/* (non-Javadoc)
 	 * @see com.conanyuan.papertelephone.ITurn#fromFile(java.lang.String)
+	 * 
+	 * TODO:
+	 * given the name of a turn directory:
+	 * make sure the directory has the right form of name, otherwise return false
+	 * Make sure a metadata file and a content file
+	 *   otherwise, return false
+	 * delete any other files
+	 * try to read both metadata and content
 	 */
 	@Override
-	public boolean fromFile(String filename) throws IOException,
+	public boolean fromFile(File dir) throws IOException,
 			DateParseException {
-		return metadataFromFile(filename) && contentFromFile();
+		return metadataFromFile(dir + "/Data") && contentFromFile();
 	}
 
 	/* (non-Javadoc)
@@ -95,7 +112,7 @@ public abstract class TurnImpl implements ITurn {
 	 * Wish we could use JSON, but the JsonReader/Writer aren't available until API 11
 	 */
 	private void metadataToFile() throws IOException {
-		FileOutputStream fos = new FileOutputStream(metadataFilename());
+		FileOutputStream fos = new FileOutputStream(metadataFilename(true));
 		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
 		BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
 		try {
@@ -138,15 +155,31 @@ public abstract class TurnImpl implements ITurn {
 		InputStreamReader inputStreamReader = new InputStreamReader(fis);
 		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 		try {
-			if (bufferedReader.readLine() == "USER") {
+			String line;
+			if (null == (line = bufferedReader.readLine())) {
+				return false;
+			}
+			if (line == "USER") {
 				mUser = User.find(bufferedReader.readLine());
 			}
-			if (bufferedReader.readLine() == "TIMESTAMP") {
+			if (null == (line = bufferedReader.readLine())) {
+				return false;
+			}
+			if (line == "TIMESTAMP") {
 				mTimestamp = DateUtils.parseDate(bufferedReader.readLine());
 			}
-			mGameId = Integer.parseInt(bufferedReader.readLine());
-			mNth = Integer.parseInt(bufferedReader.readLine());
-			mDirname = bufferedReader.readLine();
+			if (null == (line = bufferedReader.readLine())) {
+				return false;
+			}
+			mGameId = Integer.parseInt(line);
+			if (null == (line = bufferedReader.readLine())) {
+				return false;
+			}
+			mNth = Integer.parseInt(line);
+			if (null == (line = bufferedReader.readLine())) {
+				return false;
+			}
+			mDirname = line;
 		} finally {
 			bufferedReader.close();
 		}

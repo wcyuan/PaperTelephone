@@ -58,8 +58,16 @@ public abstract class GameImpl implements IGame {
 		getNewTurn().setEditView(a, this, getEditViewId(), getDoneId());
 	}
 
+	public static String gameDir(int id) {
+		return "Game-" + id;
+	}
+
 	/* (non-Javadoc)
 	 * @see com.conanyuan.papertelephone.IGame#toFile(java.io.File)
+	 * TODO:
+	 * only write turns to disk that aren't already there
+	 * don't delete files before writing
+	 * don't need to be given the file to write to
 	 */
 	@Override
 	public void toDisk(File dir) throws IOException {
@@ -74,14 +82,30 @@ public abstract class GameImpl implements IGame {
 
 	/* (non-Javadoc)
 	 * @see com.conanyuan.papertelephone.IGame#fromFile(java.io.File)
+	 * 
+	 * TODO:
+	 * given a directory:
+	 * parse the name of the directory to get the game id
+	 * if the name doesn't match, return false
+	 *   (directory is not valid, caller should remove this directory)
+	 * loop through all contents of the directory, sorted
+	 * foreach file, try to create a turn
+	 *   if we can't create a turn from it, (Turn.fromFile returns false)
+	 *     delete the directory for that turn
+	 *   if we can create a turn, validate it:
+	 *     make sure the turn has the right number
+	 *     make sure the turn has the right type
+	 *     otherwise, delete the turn directory
+	 * if no turns, return false (parent will delete the game)
 	 */
 	@Override
 	public void fromDisk(File dir) throws IOException, DateParseException {
+		
 		File[] files = dir.listFiles();
 		Arrays.sort(files);
 		for (File file : files) {
 			ITurn turn = getNewTurn();
-			if (turn.fromFile(file.toString())) {
+			if (turn.fromFile(file)) {
 				mTurns.add(turn);
 			}
 		}

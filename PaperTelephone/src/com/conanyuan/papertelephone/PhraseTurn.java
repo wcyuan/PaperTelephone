@@ -54,7 +54,7 @@ public class PhraseTurn extends TurnImpl {
 	 */
 	@Override
 	public void contentToFile() throws IOException {
-		FileOutputStream fos = new FileOutputStream(contentFilename());
+		FileOutputStream fos = new FileOutputStream(contentFilename(true));
 		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
 		BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
 		try {
@@ -69,7 +69,7 @@ public class PhraseTurn extends TurnImpl {
 	 */
 	@Override
 	public boolean contentFromFile() throws IOException {
-		FileInputStream fis = new FileInputStream(contentFilename());
+		FileInputStream fis = new FileInputStream(contentFilename(false));
 		InputStreamReader inputStreamReader = new InputStreamReader(fis);
 		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 		try {
