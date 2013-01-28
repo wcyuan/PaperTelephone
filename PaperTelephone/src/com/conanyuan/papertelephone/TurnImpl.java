@@ -8,14 +8,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.http.impl.cookie.DateParseException;
-import org.apache.http.impl.cookie.DateUtils;
-
 import android.os.Parcel;
+import android.util.Log;
 
 public abstract class TurnImpl implements ITurn {
 
@@ -24,6 +24,8 @@ public abstract class TurnImpl implements ITurn {
 	private final int mGameId;
 	private final int mNth;
 	private final String mRootdir;
+
+	private static final SimpleDateFormat tsformat = new SimpleDateFormat("yyMMdd HH:MM:SS.SSSZ");
 
 	protected TurnImpl(int gameId, int nth, String rootdir) {
 		mTimestamp = new Date();
@@ -75,7 +77,15 @@ public abstract class TurnImpl implements ITurn {
 	private String getdir(boolean shouldCreate) {
 		String dir = mRootdir + "/" + GameImpl.gameDir(mGameId) + "/Turn-" + mNth;
 		if (shouldCreate) {
-			(new File(dir)).mkdirs();
+			File dirfile = new File(dir);
+			if (dirfile.exists() && !dirfile.isDirectory()) {
+				try {
+					GameImpl.deleteFileRecursively(dirfile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			dirfile.mkdirs();
 		}
 		return dir;
 	}
@@ -103,12 +113,14 @@ public abstract class TurnImpl implements ITurn {
 	 * Wish we could use JSON, but the JsonReader/Writer aren't available until API 11
 	 */
 	private void metadataToFile() throws IOException {
-		FileOutputStream fos = new FileOutputStream(metadataFilename(true));
+		String fn = metadataFilename(true);
+		Log.i("TurnImpl metadataToFile", "writing metadata to " + fn);
+		FileOutputStream fos = new FileOutputStream(fn);
 		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
 		BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
 		try {
 			if (mUser == null) {
-				bufferedWriter.write("NO USER\n");
+				bufferedWriter.write("NO USER");
 				bufferedWriter.newLine();
 			} else {
 				bufferedWriter.write("USER");
@@ -122,7 +134,7 @@ public abstract class TurnImpl implements ITurn {
 			} else {
 				bufferedWriter.write("TIMESTAMP");
 				bufferedWriter.newLine();
-				bufferedWriter.write(mTimestamp.toString());
+				bufferedWriter.write(tsformat.format(mTimestamp));
 				bufferedWriter.newLine();
 			}
 			bufferedWriter.write(Integer.toString(mGameId));
@@ -144,21 +156,24 @@ public abstract class TurnImpl implements ITurn {
 	 * Wish we could use JSON, but the JsonReader/Writer aren't available until API 11
 	 * 
 	 * (non-Javadoc)
+	 * @throws ParseException 
 	 * @see com.conanyuan.papertelephone.ITurn#fromFile(java.lang.String)
 	 */
-	protected TurnImpl(File dir) throws TurnParseException, IOException, DateParseException {
+	protected TurnImpl(File dir) throws TurnParseException, IOException, ParseException {
 		// Validate the directory name
 		if (!dir.isDirectory()) {
+			Log.w("TurnImpl file ctor", "Not a directory, deleting " + dir);
 			throw new TurnParseException("Not a directory: " + dir);
 		}
 		Pattern p = Pattern.compile("^Turn-(\\d+)$");
 		Matcher m = p.matcher(dir.getName());
-		int gameId = -1;
+		int nth = -1;
 		while (m.find()) {
-			gameId = Integer.parseInt(m.group());
+			nth = Integer.parseInt(m.group(1));
 			break;
 		}
-		if (gameId < 0) {
+		if (nth < 0) {
+			Log.w("TurnImpl file ctor", "Can't parse directory name, deleting " + dir);
 			throw new TurnParseException("Invalid directory name: " + dir);
 		}
 
@@ -166,22 +181,26 @@ public abstract class TurnImpl implements ITurn {
 		File metadataFile = new File(dir + "/Data");
 		File contentFile = new File(dir + "/Content");
 		for (File file : dir.listFiles()) {
-			if (file.getName() == "Data") {
+			if (file.getName().equals("Data")) {
 				metadataFile = file;
 				if (!metadataFile.canRead() || !metadataFile.isFile()) {
+					Log.w("TurnImpl file ctor", "Can't read metadata: " + dir);
 					throw new TurnParseException("Can't read metadata: " + metadataFile);
 				}
-			} else if (file.getName() == "Content") {
+			} else if (file.getName().equals("Content")) {
 				contentFile = file;
 				if (!contentFile.canRead() || !contentFile.isFile()) {
+					Log.w("TurnImpl file ctor", "Can't read content: " + dir);
 					throw new TurnParseException("Can't read content: " + contentFile);
 				}
 			} else {
 				// Unknown file -- delete it
+				Log.w("TurnImpl file ctor", "Unknown file(" + file.getName() + ") , deleting: " + file);
 				GameImpl.deleteFileRecursively(file);
 			}
 		}
 
+		Log.i("TurnImpl file ctor", "reading metadata from " + metadataFile);
 		// Read the data from the directory
 		FileInputStream fis = new FileInputStream(metadataFile);
 		InputStreamReader inputStreamReader = new InputStreamReader(fis);
@@ -189,32 +208,39 @@ public abstract class TurnImpl implements ITurn {
 		try {
 			String line;
 			if (null == (line = bufferedReader.readLine())) {
+				Log.i("TurnImpl file ctor", "empty metadata: " + metadataFile);
 				throw new TurnParseException("Empty file: " + metadataFile);
 			}
-			if (line == "USER") {
+			if (line.equals("USER")) {
 				mUser = User.find(bufferedReader.readLine());
 			}
 			if (null == (line = bufferedReader.readLine())) {
+				Log.i("TurnImpl file ctor", "no timestamp in metadata: " + metadataFile);
 				throw new TurnParseException("Not enough lines: " + metadataFile);
 			}
-			if (line == "TIMESTAMP") {
-				mTimestamp = DateUtils.parseDate(bufferedReader.readLine());
+			if (line.equals("TIMESTAMP")) {
+				mTimestamp = tsformat.parse(bufferedReader.readLine());
 			} else {
 				mTimestamp = new Date();
 			}
 			if (null == (line = bufferedReader.readLine())) {
+				Log.i("TurnImpl file ctor", "no game id in metadata: " + metadataFile);
 				throw new TurnParseException("Not enough lines: " + metadataFile);
 			}
 			mGameId = Integer.parseInt(line);
-			if (mGameId != gameId) {
-				throw new TurnParseException("Game id from directory name (" + gameId +
-						") doesn't match game id from file (" + mGameId + ")");
-			}
 			if (null == (line = bufferedReader.readLine())) {
+				Log.i("TurnImpl file ctor", "no nth in metadata: " + metadataFile);
 				throw new TurnParseException("Not enough lines: " + metadataFile);
 			}
 			mNth = Integer.parseInt(line);
+			if (mNth != nth) {
+				Log.i("TurnImpl file ctor", "wrong nth (" + mNth +
+						") in metadata doesn't match expected " + nth + ": " + metadataFile);
+				throw new TurnParseException("Game id from directory name (" + nth +
+						") doesn't match game id from file (" + mNth + ")");
+			}
 			if (null == (line = bufferedReader.readLine())) {
+				Log.i("TurnImpl file ctor", "no rootdir in metadata: " + metadataFile);
 				throw new TurnParseException("Not enough lines: " + metadataFile);
 			}
 			mRootdir = line;

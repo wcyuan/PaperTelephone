@@ -1,7 +1,10 @@
 package com.conanyuan.papertelephone;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -32,12 +35,7 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main_layout);
 
-		//mLocalGames = new ArrayList<IGame>();
-		//mNetworkGames = new ArrayList<IGame>();
-		//mCompletedGames = new ArrayList<IGame>();
-
 		mAdapter = new MyAdapter(getSupportFragmentManager(), mLocalGames, mCompletedGames);
-
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
 	}
@@ -47,8 +45,55 @@ public class MainActivity extends FragmentActivity {
 	 */
 	@Override
 	protected void onPause() {
-		// TODO MainActivity.onPause
 		super.onPause();
+		for (IGame game : mLocalGames) {
+			try {
+				game.toDisk();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		for (IGame game : mCompletedGames) {
+			try {
+				game.toDisk();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see android.support.v4.app.FragmentActivity#onResume()
+	 */
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		// TODO: have to handle the case where mLocalGames still exists!
+		if (mLocalGames.size() != 0) {
+			return;
+		}
+		
+		File rootdir = getFilesDir();
+		File[] files = rootdir.listFiles();
+		Arrays.sort(files);
+		for (File gameDir : files) {
+			int gameId = GameImpl.parseGameDir(gameDir.getName());
+			DrawGame g = new DrawGame(gameId, rootdir.toString());
+			try {
+				if (g.fromDisk(gameDir)) {
+					mLocalGames.add(g);
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				try {
+					GameImpl.deleteFileRecursively(gameDir);
+				} catch (IOException e1) {
+					e1.printStackTrace();
+				}
+			}
+		}
+		Collections.sort(mLocalGames, new GameImpl.ByTimestamp());
 	}
 
 	public static class MyAdapter extends FragmentPagerAdapter {

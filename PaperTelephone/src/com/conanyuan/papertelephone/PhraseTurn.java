@@ -8,12 +8,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-
-import org.apache.http.impl.cookie.DateParseException;
+import java.text.ParseException;
 
 import android.app.Activity;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -27,7 +27,7 @@ public class PhraseTurn extends TurnImpl {
 		super(game);
 	}
 
-	public PhraseTurn(File dir) throws TurnParseException, IOException, DateParseException {
+	public PhraseTurn(File dir) throws TurnParseException, IOException, ParseException {
 		super(dir);
 	}
 
@@ -56,7 +56,9 @@ public class PhraseTurn extends TurnImpl {
 	 */
 	@Override
 	public void contentToFile() throws IOException {
-		FileOutputStream fos = new FileOutputStream(contentFilename(true));
+		String fn = contentFilename(true);
+		Log.i("DrawTurn", "writing phrase to " + fn);
+		FileOutputStream fos = new FileOutputStream(fn);
 		OutputStreamWriter outputStreamWriter = new OutputStreamWriter(fos);
 		BufferedWriter bufferedWriter = new BufferedWriter(outputStreamWriter);
 		try {
@@ -71,7 +73,9 @@ public class PhraseTurn extends TurnImpl {
 	 */
 	@Override
 	public boolean contentFromFile() throws IOException {
-		FileInputStream fis = new FileInputStream(contentFilename(false));
+		String fn = contentFilename(false);
+		Log.i("DrawTurn", "reading phrase from " + fn);
+		FileInputStream fis = new FileInputStream(fn);
 		InputStreamReader inputStreamReader = new InputStreamReader(fis);
 		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 		try {

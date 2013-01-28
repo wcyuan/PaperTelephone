@@ -5,8 +5,8 @@ import android.os.Parcelable;
 
 public class PhraseGame extends GameImpl {
 
-	public PhraseGame(int id, String dirname) {
-		super(id, dirname);
+	public PhraseGame(int id, String rootdir) {
+		super(id, rootdir);
 	}
 
 	@Override

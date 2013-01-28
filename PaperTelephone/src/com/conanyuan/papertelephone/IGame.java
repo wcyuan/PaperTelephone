@@ -2,8 +2,7 @@ package com.conanyuan.papertelephone;
 
 import java.io.File;
 import java.io.IOException;
-
-import org.apache.http.impl.cookie.DateParseException;
+import java.util.Date;
 
 import android.os.Parcelable;
 
@@ -11,11 +10,11 @@ public interface IGame extends Parcelable {
 
 	void setNextTurnView(GameActivity a);
 
-	void toDisk(File dir) throws IOException;
+	void toDisk() throws IOException;
 
-	void fromDisk(File dir) throws IOException, DateParseException;
+	boolean fromDisk(File dir) throws IOException;
 
-	void addTurn(ITurn turn);
+	boolean addTurn(ITurn turn);
 
 	int nTurns();
 
@@ -24,4 +23,6 @@ public interface IGame extends Parcelable {
 	int getGameId();
 	
 	String getRootdir();
+
+	Date firstTurnTimestamp();
 }

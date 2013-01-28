@@ -7,8 +7,8 @@ import android.widget.TextView;
 
 public class DrawGame extends GameImpl {
 
-	public DrawGame(int id, String dirname) {
-		super(id, dirname);
+	public DrawGame(int id, String rootdir) {
+		super(id, rootdir);
 	}
 
 	@Override

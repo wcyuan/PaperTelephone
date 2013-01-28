@@ -3,8 +3,7 @@ package com.conanyuan.papertelephone;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-import org.apache.http.impl.cookie.DateParseException;
+import java.text.ParseException;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
@@ -21,7 +20,7 @@ public class DrawTurn extends TurnImpl {
 		super(game);
 	}
 
-	public DrawTurn(File dir) throws TurnParseException, IOException, DateParseException {
+	public DrawTurn(File dir) throws TurnParseException, IOException, ParseException {
 		super(dir);
 	}
 
