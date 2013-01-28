@@ -38,7 +38,7 @@ public class PhraseTurn extends TurnImpl {
 	}
 
 	@Override
-	public void setEditView(final GameActivity a, final IGame g, int contentId, int doneId) {
+	public void setEditView(final GameActivity a, int contentId, int doneId) {
 		final EditText next = (EditText) a.findViewById(contentId);
 		Button done = (Button) a.findViewById(doneId);
 		final PhraseTurn turn = this;
@@ -46,7 +46,6 @@ public class PhraseTurn extends TurnImpl {
 			@Override
 			public void onClick(View v) {
 		    	mPhrase = next.getText().toString();
-		    	//g.addTurn(turn);
 		    	a.returnTurn(turn);
 			}
 		});

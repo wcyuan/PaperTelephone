@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.impl.cookie.DateParseException;
 import org.apache.http.impl.cookie.DateUtils;
@@ -35,6 +37,14 @@ public abstract class TurnImpl implements ITurn {
 	}
 
 	public static class TurnParseException extends Exception {
+		public TurnParseException(String string) {
+			super(string);
+		}
+
+		public TurnParseException() {
+			super();
+		}
+
 		private static final long serialVersionUID = -5372762648389317288L;
 	}
 
@@ -51,6 +61,15 @@ public abstract class TurnImpl implements ITurn {
 		return mTimestamp;
 	}
 
+	@Override
+	public int getGameId() {
+		return mGameId;
+	}
+
+	@Override
+	public int getNth() {
+		return mNth;
+	}
 	/* -------- BEGIN to/from file -------------- */
 
 	private String getdir(boolean shouldCreate) {
@@ -76,14 +95,6 @@ public abstract class TurnImpl implements ITurn {
 	public void toFile() throws IOException {
 		metadataToFile();
 		contentToFile();
-	}
-
-	/* (non-Javadoc)
-	 * @see com.conanyuan.papertelephone.ITurn#delete()
-	 */
-	@Override
-	public void delete() throws IOException {
-		// TODO TurnImpl.delete
 	}
 
 	/* (non-Javadoc)
@@ -134,29 +145,57 @@ public abstract class TurnImpl implements ITurn {
 	 * 
 	 * (non-Javadoc)
 	 * @see com.conanyuan.papertelephone.ITurn#fromFile(java.lang.String)
-	 * 
-	 * TODO: TurnImpl ctor
-	 * given the name of a turn directory:
-	 * make sure the directory has the right form of name, otherwise return false
-	 * Make sure a metadata file and a content file
-	 *   otherwise, return false
-	 * delete any other files
-	 * try to read both metadata and content
 	 */
 	protected TurnImpl(File dir) throws TurnParseException, IOException, DateParseException {
-		FileInputStream fis = new FileInputStream(dir + "/Data");
+		// Validate the directory name
+		if (!dir.isDirectory()) {
+			throw new TurnParseException("Not a directory: " + dir);
+		}
+		Pattern p = Pattern.compile("^Turn-(\\d+)$");
+		Matcher m = p.matcher(dir.getName());
+		int gameId = -1;
+		while (m.find()) {
+			gameId = Integer.parseInt(m.group());
+			break;
+		}
+		if (gameId < 0) {
+			throw new TurnParseException("Invalid directory name: " + dir);
+		}
+
+		// Validate the expected files
+		File metadataFile = new File(dir + "/Data");
+		File contentFile = new File(dir + "/Content");
+		for (File file : dir.listFiles()) {
+			if (file.getName() == "Data") {
+				metadataFile = file;
+				if (!metadataFile.canRead() || !metadataFile.isFile()) {
+					throw new TurnParseException("Can't read metadata: " + metadataFile);
+				}
+			} else if (file.getName() == "Content") {
+				contentFile = file;
+				if (!contentFile.canRead() || !contentFile.isFile()) {
+					throw new TurnParseException("Can't read content: " + contentFile);
+				}
+			} else {
+				// Unknown file -- delete it
+				GameImpl.deleteFileRecursively(file);
+			}
+		}
+
+		// Read the data from the directory
+		FileInputStream fis = new FileInputStream(metadataFile);
 		InputStreamReader inputStreamReader = new InputStreamReader(fis);
 		BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 		try {
 			String line;
 			if (null == (line = bufferedReader.readLine())) {
-				throw new TurnParseException();
+				throw new TurnParseException("Empty file: " + metadataFile);
 			}
 			if (line == "USER") {
 				mUser = User.find(bufferedReader.readLine());
 			}
 			if (null == (line = bufferedReader.readLine())) {
-				throw new TurnParseException();
+				throw new TurnParseException("Not enough lines: " + metadataFile);
 			}
 			if (line == "TIMESTAMP") {
 				mTimestamp = DateUtils.parseDate(bufferedReader.readLine());
@@ -164,15 +203,19 @@ public abstract class TurnImpl implements ITurn {
 				mTimestamp = new Date();
 			}
 			if (null == (line = bufferedReader.readLine())) {
-				throw new TurnParseException();
+				throw new TurnParseException("Not enough lines: " + metadataFile);
 			}
 			mGameId = Integer.parseInt(line);
+			if (mGameId != gameId) {
+				throw new TurnParseException("Game id from directory name (" + gameId +
+						") doesn't match game id from file (" + mGameId + ")");
+			}
 			if (null == (line = bufferedReader.readLine())) {
-				throw new TurnParseException();
+				throw new TurnParseException("Not enough lines: " + metadataFile);
 			}
 			mNth = Integer.parseInt(line);
 			if (null == (line = bufferedReader.readLine())) {
-				throw new TurnParseException();
+				throw new TurnParseException("Not enough lines: " + metadataFile);
 			}
 			mRootdir = line;
 		} finally {

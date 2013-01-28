@@ -8,13 +8,15 @@ import android.os.Parcelable;
 
 public interface ITurn extends Parcelable {
 
-	public abstract Date getTimestamp();
+	Date getTimestamp();
 
-	public abstract void setReadView(final Activity a, int viewId);
+	void setReadView(final Activity a, int viewId);
 
-	public abstract void setEditView(final GameActivity a, IGame g, int contentId, int doneId);
+	void setEditView(final GameActivity a, int contentId, int doneId);
 
-	public void toFile() throws IOException;
+	void toFile() throws IOException;
 
-	public void delete() throws IOException;
+	int getGameId();
+
+	int getNth();
 }

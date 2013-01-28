@@ -247,7 +247,6 @@ public class DrawGameActivity extends GameActivity
 	@Override
 	public void onClick(View v) {
 		ITurn turn = new DrawTurn(getGame(), mDrawView.getBitmap());
-		//getGame().addTurn(turn);
 		returnTurn(turn);
 	}
 }

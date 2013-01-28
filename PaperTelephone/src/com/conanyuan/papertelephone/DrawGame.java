@@ -1,12 +1,5 @@
 package com.conanyuan.papertelephone;
 
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.http.impl.cookie.DateParseException;
-
-import com.conanyuan.papertelephone.TurnImpl.TurnParseException;
-
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.view.View;
@@ -19,21 +12,11 @@ public class DrawGame extends GameImpl {
 	}
 
 	@Override
-	protected ITurn getNewTurn(IGame game) {
+	protected  Class<? extends ITurn> getNextTurnClass() {
 		if (nTurns() % 2 == 0) {
-			return new PhraseTurn(this);
+			return PhraseTurn.class;
 		} else {
-			return new DrawTurn(this);
-		}
-	}
-
-	@Override
-	protected ITurn getNewTurn(File dir) throws TurnParseException,
-			IOException, DateParseException {
-		if (nTurns() % 2 == 0) {
-			return new PhraseTurn(dir);
-		} else {
-			return new DrawTurn(dir);
+			return DrawTurn.class;
 		}
 	}
 
