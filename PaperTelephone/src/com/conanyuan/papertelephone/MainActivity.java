@@ -15,10 +15,15 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -39,13 +44,19 @@ public class MainActivity extends FragmentActivity {
 		mPager = (ViewPager) findViewById(R.id.pager);
 		mPager.setAdapter(mAdapter);
 	}
-	
+
 	/* (non-Javadoc)
 	 * @see android.support.v4.app.FragmentActivity#onPause()
 	 */
 	@Override
 	protected void onPause() {
 		super.onPause();
+		File rootdir = getFilesDir();
+		try {
+			GameImpl.deleteFileRecursively(rootdir);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		for (IGame game : mLocalGames) {
 			try {
 				game.toDisk();
@@ -68,8 +79,10 @@ public class MainActivity extends FragmentActivity {
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		// TODO: have to handle the case where mLocalGames still exists!
+
+		// TODO: Do we have to handle the case where the activity was garbage
+		// collected, mLocalGames is empty, but we can't read the files because
+		// we used it to serialize a turn (which has content but no data)?
 		if (mLocalGames.size() != 0) {
 			return;
 		}
@@ -94,6 +107,30 @@ public class MainActivity extends FragmentActivity {
 			}
 		}
 		Collections.sort(mLocalGames, new GameImpl.ByTimestamp());
+	}
+
+	public int nextGameId() {
+		for (int ii = 0; ; ii++) {
+			boolean found = false;
+			for (IGame g : mLocalGames) {
+				if (g.getGameId() == ii) {
+					found = true;
+					break;
+				}
+			}
+			if (found) {
+				continue;
+			}
+			for (IGame g : mCompletedGames) {
+				if (g.getGameId() == ii) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				return ii;
+			}
+		}
 	}
 
 	public static class MyAdapter extends FragmentPagerAdapter {
@@ -185,7 +222,8 @@ public class MainActivity extends FragmentActivity {
 			button.setOnClickListener(new OnClickListener() {
 				@SuppressWarnings("unchecked")
 				public void onClick(View v) {
-					mGames.add(new DrawGame(mGames.size(), getActivity().getFilesDir().toString()));
+					mGames.add(new DrawGame(((MainActivity)getActivity()).nextGameId(), 
+							getActivity().getFilesDir().toString()));
 					// Have to cast to an ArrayAdapter in order to call
 					// notifyDataSetChanged.
 					// And if we don't call notifyDataSetChanged, then the view
@@ -205,6 +243,7 @@ public class MainActivity extends FragmentActivity {
 			super.onActivityCreated(savedInstanceState);
 			setListAdapter(new ArrayAdapter<IGame>(getActivity(),
 					android.R.layout.simple_list_item_1, mGames));
+			registerForContextMenu(getListView());
 		}
 
 		@Override
@@ -213,6 +252,34 @@ public class MainActivity extends FragmentActivity {
 			Intent intent = new Intent(getActivity(), DrawGameActivity.class);
 		    intent.putExtra(GAME_MESSAGE, mGames.get(position));
 		    startActivityForResult(intent, position);
+		}
+
+		/* (non-Javadoc)
+		 * @see android.support.v4.app.Fragment#onContextItemSelected(android.view.MenuItem)
+		 */
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean onContextItemSelected(MenuItem item) {
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+			switch (item.getItemId()) {
+			case R.id.delete:
+				mGames.remove(info.position);
+				((ArrayAdapter<IGame>) getListAdapter()).notifyDataSetChanged();
+				return true;
+			default:
+				return super.onContextItemSelected(item);
+			}
+		}
+
+		/* (non-Javadoc)
+		 * @see android.support.v4.app.Fragment#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
+		 */
+		@Override
+		public void onCreateContextMenu(ContextMenu menu, View v,
+				ContextMenuInfo menuInfo) {
+			super.onCreateContextMenu(menu, v, menuInfo);
+		    MenuInflater inflater = getActivity().getMenuInflater();
+		    inflater.inflate(R.menu.main_context_menu, menu);
 		}
 
 		/* (non-Javadoc)

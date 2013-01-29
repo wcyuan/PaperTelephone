@@ -248,7 +248,7 @@ public abstract class GameImpl implements IGame {
 			}
 		}
 		if (mTurns.size() == 0) {
-			// TODO: Can't delete zero-turned games: when we return to the 
+			// Can't delete zero-turned games: when we return to the 
 			// MainActivity with our first turn, the game file will have zero
 			// turns but we don't want to delete it...
 
