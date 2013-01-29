@@ -21,7 +21,7 @@ public interface IGame extends Parcelable {
 	int getLayoutView();
 
 	int getGameId();
-	
+
 	String getRootdir();
 
 	Date firstTurnTimestamp();

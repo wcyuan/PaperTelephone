@@ -43,13 +43,7 @@ public class DrawGameActivity extends GameActivity
         	return;
         }
 
-        // Show a phrase, enter a picture
-        //setContentView(new MyView(this));
-
         LinearLayout layout = (LinearLayout)findViewById(R.id.container);
-        //ViewGroup.LayoutParams params = new ViewGroup.LayoutParams(
-        //		ViewGroup.LayoutParams.FILL_PARENT,
-        //		ViewGroup.LayoutParams.FILL_PARENT);
         mDrawView = new MyView(this);
         layout.addView(mDrawView,
         		new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT,

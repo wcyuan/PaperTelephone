@@ -16,6 +16,7 @@ public final class R {
     }
     public static final class id {
         public static final int button_done=0x7f070005;
+        public static final int complete=0x7f07000c;
         public static final int container=0x7f070000;
         public static final int delete=0x7f07000b;
         public static final int menu_settings=0x7f07000a;

@@ -18,7 +18,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.MenuInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -133,9 +133,17 @@ public class MainActivity extends FragmentActivity {
 		}
 	}
 
+	public void addCompletedGame(IGame game) {
+		mCompletedGames.add(game);
+		mAdapter.notifyDataSetChanged();
+	}
+
 	public static class MyAdapter extends FragmentPagerAdapter {
 		private ArrayList<IGame> myLocalGames;
 		private ArrayList<IGame> myCompletedGames;
+
+		private LocalGameListFragment myLocalFragment;
+		private CompletedGameListFragment myCompletedFragment;
 
 		public MyAdapter(FragmentManager fragmentManager,
 				ArrayList<IGame> local, ArrayList<IGame> completed) {
@@ -153,9 +161,11 @@ public class MainActivity extends FragmentActivity {
 		public Fragment getItem(int position) {
 			switch (position) {
 			case 0:
-				return LocalGameListFragment.newInstance(myLocalGames);
+				myLocalFragment = LocalGameListFragment.newInstance(myLocalGames);
+				return myLocalFragment;
 			case 1:
-				return LocalGameListFragment.newInstance(myCompletedGames);
+				myCompletedFragment = CompletedGameListFragment.newInstance(myCompletedGames);
+				return myCompletedFragment;
 			case 2:
 				return FileListFragment.newInstance();
 			default:
@@ -176,11 +186,29 @@ public class MainActivity extends FragmentActivity {
 				return "Unknown";
 			}
 		}
+
+		/* (non-Javadoc)
+		 * @see android.support.v4.view.PagerAdapter#notifyDataSetChanged()
+		 */
+		@SuppressWarnings("unchecked")
+		@Override
+		public void notifyDataSetChanged() {
+			super.notifyDataSetChanged();
+			if (myLocalFragment != null) {
+				((ArrayAdapter<IGame>) myLocalFragment.getListAdapter())
+				.notifyDataSetChanged();
+			}
+			if (myCompletedFragment != null) {
+				((ArrayAdapter<IGame>) myCompletedFragment.getListAdapter())
+				.notifyDataSetChanged();
+			}
+		}
 	}
 
 	public static class LocalGameListFragment extends ListFragment {
 		static final String GAME_MESSAGE = "com.conanyuan.papertelephone.GAME";
-		private ArrayList<IGame> mGames;
+		static final int MENU_GROUP_ID = 1;
+		protected ArrayList<IGame> mGames;
 
 		/**
 		 * Create a new instance of LocalGameListFragment, providing "games" as an
@@ -260,9 +288,24 @@ public class MainActivity extends FragmentActivity {
 		@SuppressWarnings("unchecked")
 		@Override
 		public boolean onContextItemSelected(MenuItem item) {
+			// Need a group id because the fragment pager calls
+			// onContextItemSelected on more than just the fragment 
+			// you expect, for some reason
+			// http://stackoverflow.com/questions/5297842/how-to-handle-oncontextitemselected-in-a-multi-fragment-activity
+			if (item.getGroupId() != MENU_GROUP_ID) {
+				return super.onContextItemSelected(item);
+			}
+			
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
 			switch (item.getItemId()) {
 			case R.id.delete:
+				mGames.remove(info.position);
+				((ArrayAdapter<IGame>) getListAdapter()).notifyDataSetChanged();
+				return true;
+			case R.id.complete:
+				((MainActivity)getActivity()).addCompletedGame(mGames.get(info.position));
+				// TODO: tell the game it is completed so it can write it to
+				// the metadata, so we can recover it correctly
 				mGames.remove(info.position);
 				((ArrayAdapter<IGame>) getListAdapter()).notifyDataSetChanged();
 				return true;
@@ -278,8 +321,8 @@ public class MainActivity extends FragmentActivity {
 		public void onCreateContextMenu(ContextMenu menu, View v,
 				ContextMenuInfo menuInfo) {
 			super.onCreateContextMenu(menu, v, menuInfo);
-		    MenuInflater inflater = getActivity().getMenuInflater();
-		    inflater.inflate(R.menu.main_context_menu, menu);
+		    menu.add(MENU_GROUP_ID, R.id.delete, Menu.NONE, "Delete Game");
+		    menu.add(MENU_GROUP_ID, R.id.complete, Menu.NONE, "Mark Game Completed");
 		}
 
 		/* (non-Javadoc)
@@ -294,6 +337,75 @@ public class MainActivity extends FragmentActivity {
 			}
 			mGames.get(requestCode).addTurn((ITurn)data.getParcelableExtra(GAME_MESSAGE));
 			((ArrayAdapter<IGame>) getListAdapter()).notifyDataSetChanged();
+		}
+	}
+
+	public static class CompletedGameListFragment extends LocalGameListFragment {
+		static final int MENU_GROUP_ID = 2;
+		/**
+		 * Create a new instance of CompletedGameListFragment, providing "games" as an
+		 * argument.
+		 */
+		static CompletedGameListFragment newInstance(ArrayList<IGame> games) {
+			CompletedGameListFragment f = new CompletedGameListFragment();
+
+			Bundle args = new Bundle();
+			args.putParcelableArrayList("games", games);
+			f.setArguments(args);
+
+			return f;
+		}
+
+		/**
+		 * The Fragment's UI is just a simple text view showing its instance
+		 * number.
+		 */
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View v = super.onCreateView(inflater, container, savedInstanceState);
+			// Hide the new_game button
+			v.findViewById(R.id.new_game).setVisibility(View.GONE);
+			return v;
+		}
+
+		@Override
+		public void onListItemClick(ListView l, View v, int position, long id) {
+			Log.i("FragmentList", "Item clicked: " + id);
+			// TODO should use a different activity
+			Intent intent = new Intent(getActivity(), DrawGameActivity.class);
+			intent.putExtra(GAME_MESSAGE, mGames.get(position));
+		    startActivity(intent);
+		}
+
+		/* (non-Javadoc)
+		 * @see android.support.v4.app.Fragment#onCreateContextMenu(android.view.ContextMenu, android.view.View, android.view.ContextMenu.ContextMenuInfo)
+		 */
+		@Override
+		public void onCreateContextMenu(ContextMenu menu, View v,
+				ContextMenuInfo menuInfo) {
+		    menu.add(MENU_GROUP_ID, R.id.delete, Menu.NONE, "Delete Game");
+		}
+
+		/* (non-Javadoc)
+		 * @see android.support.v4.app.Fragment#onContextItemSelected(android.view.MenuItem)
+		 */
+		@SuppressWarnings("unchecked")
+		@Override
+		public boolean onContextItemSelected(MenuItem item) {
+			if (item.getGroupId() != MENU_GROUP_ID) {
+				return super.onContextItemSelected(item);
+			}
+			
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+			switch (item.getItemId()) {
+			case R.id.delete:
+				mGames.remove(info.position);
+				((ArrayAdapter<IGame>) getListAdapter()).notifyDataSetChanged();
+				return true;
+			default:
+				return super.onContextItemSelected(item);
+			}
 		}
 	}
 
