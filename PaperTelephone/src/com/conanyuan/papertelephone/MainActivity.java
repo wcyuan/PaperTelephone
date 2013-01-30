@@ -52,6 +52,9 @@ public class MainActivity extends FragmentActivity {
 	protected void onPause() {
 		super.onPause();
 		File rootdir = getFilesDir();
+		// TODO: Rewriting all data to disk is not terribly fast, and this
+		// gets called any time we edit a turn.  We should probably only 
+		// write new data, not delete everything and rewrite it.
 		try {
 			GameImpl.deleteFileRecursively(rootdir);
 		} catch (IOException e1) {
