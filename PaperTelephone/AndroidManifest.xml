@@ -22,18 +22,25 @@
         </activity>
         <activity
             android:name=".GameActivity"
-            android:label="@string/title_activity_game">
+            android:label="@string/title_activity_game" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.conanyuan.papertelephone.MainActiviy" />
         </activity>
         <activity
             android:name=".DrawGameActivity"
-            android:label="@string/title_activity_game">
+            android:label="@string/title_activity_game" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.conanyuan.papertelephone.MainActiviy" />
         </activity>
-        </application>
+        <activity
+            android:name=".CompletedActivity"
+            android:label="@string/title_activity_completed" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.conanyuan.papertelephone.MainActivity" />
+        </activity>
+    </application>
 
 </manifest>

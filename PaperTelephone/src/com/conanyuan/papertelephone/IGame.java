@@ -18,6 +18,8 @@ public interface IGame extends Parcelable {
 
 	int nTurns();
 
+	ITurn getTurn(int i);
+
 	int getLayoutView();
 
 	int getGameId();

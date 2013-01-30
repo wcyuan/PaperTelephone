@@ -61,6 +61,14 @@ public abstract class GameImpl implements IGame {
 	}
 
 	/* (non-Javadoc)
+	 * @see com.conanyuan.papertelephone.IGame#getTurn(int)
+	 */
+	@Override
+	public ITurn getTurn(int i) {
+		return mTurns.get(i);
+	}
+
+	/* (non-Javadoc)
 	 * @see com.conanyuan.papertelephone.IGame#markCompleted()
 	 */
 	@Override
