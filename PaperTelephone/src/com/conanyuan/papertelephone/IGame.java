@@ -25,4 +25,8 @@ public interface IGame extends Parcelable {
 	String getRootdir();
 
 	Date firstTurnTimestamp();
+
+	void markCompleted();
+
+	boolean isCompleted();
 }

@@ -95,7 +95,11 @@ public class MainActivity extends FragmentActivity {
 			DrawGame g = new DrawGame(gameId, rootdir.toString());
 			try {
 				if (g.fromDisk(gameDir)) {
-					mLocalGames.add(g);
+					if (g.isCompleted()) {
+						mCompletedGames.add(g);
+					} else {
+						mLocalGames.add(g);
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -304,8 +308,7 @@ public class MainActivity extends FragmentActivity {
 				return true;
 			case R.id.complete:
 				((MainActivity)getActivity()).addCompletedGame(mGames.get(info.position));
-				// TODO: tell the game it is completed so it can write it to
-				// the metadata, so we can recover it correctly
+				mGames.get(info.position).markCompleted();
 				mGames.remove(info.position);
 				((ArrayAdapter<IGame>) getListAdapter()).notifyDataSetChanged();
 				return true;
@@ -394,7 +397,7 @@ public class MainActivity extends FragmentActivity {
 		@Override
 		public boolean onContextItemSelected(MenuItem item) {
 			if (item.getGroupId() != MENU_GROUP_ID) {
-				return super.onContextItemSelected(item);
+				return false;
 			}
 			
 			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();

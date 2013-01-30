@@ -25,7 +25,7 @@ public abstract class TurnImpl implements ITurn {
 	private final int mNth;
 	private final String mRootdir;
 
-	private static final SimpleDateFormat tsformat = new SimpleDateFormat("yyMMdd HH:MM:SS.SSSZ");
+	private static final SimpleDateFormat tsformat = new SimpleDateFormat("yyMMdd HH:mm:ss.SSSZ");
 
 	protected TurnImpl(int gameId, int nth, String rootdir) {
 		mTimestamp = new Date();
@@ -247,6 +247,9 @@ public abstract class TurnImpl implements ITurn {
 		} finally {
 			bufferedReader.close();
 		}
+		// TODO: actually, the content (bitmaps) can be kind if big.
+		// We should probably only load the metadata and only load the content
+		// when necessary.
 		contentFromFile();
 	}
 

@@ -30,6 +30,7 @@ public abstract class GameImpl implements IGame {
 	private final List<ITurn> mTurns;
 	private final int mGameId;
 	private final String mRootdir;
+	private boolean isCompleted = false;
 
 	protected GameImpl(int gameId, String dirname) {
 		mTurns = new ArrayList<ITurn>();
@@ -57,6 +58,22 @@ public abstract class GameImpl implements IGame {
 	@Override
 	public int nTurns() {
 		return mTurns.size();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.conanyuan.papertelephone.IGame#markCompleted()
+	 */
+	@Override
+	public void markCompleted() {
+		isCompleted = true;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.conanyuan.papertelephone.IGame#isCompleted()
+	 */
+	@Override
+	public boolean isCompleted() {
+		return isCompleted;
 	}
 
 	@Override
@@ -183,6 +200,10 @@ public abstract class GameImpl implements IGame {
 		for (int ii = 0; ii < mTurns.size(); ii++) {
 			mTurns.get(ii).toFile();
 		}
+		if (isCompleted) {
+			File complete = new File(dir + "/complete");
+			complete.createNewFile();
+		}
 	}
 
 	/*
@@ -221,6 +242,10 @@ public abstract class GameImpl implements IGame {
 		File[] files = dir.listFiles();
 		Arrays.sort(files);
 		for (File file : files) {
+			if (file.getName().equals("complete")) {
+				isCompleted = true;
+				continue;
+			}
 			ITurn turn;
 			try {
 				turn = getNewTurn(file);
