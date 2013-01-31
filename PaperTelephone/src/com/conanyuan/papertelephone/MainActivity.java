@@ -379,7 +379,7 @@ public class MainActivity extends FragmentActivity {
 		public void onListItemClick(ListView l, View v, int position, long id) {
 			Log.i("FragmentList", "Item clicked: " + id);
 			// TODO should use a different activity
-			Intent intent = new Intent(getActivity(), DrawGameActivity.class);
+			Intent intent = new Intent(getActivity(), CompletedActivity.class);
 			intent.putExtra(GAME_MESSAGE, mGames.get(position));
 		    startActivity(intent);
 		}

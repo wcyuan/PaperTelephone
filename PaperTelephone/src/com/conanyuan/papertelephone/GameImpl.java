@@ -173,9 +173,10 @@ public abstract class GameImpl implements IGame {
 					.findViewById(R.id.next_turn_label);
 			next_label.setText("First Turn:");
 		} else {
-			lastTurn.setReadView(a, getReadViewId());
+			lastTurn.setReadView(a, a.findViewById(getReadViewId()));
 		}
-		getNewTurn().setEditView(a, getEditViewId(), getDoneId());
+		getNewTurn().setEditView(a, a.findViewById(getEditViewId()),
+				a.findViewById(getDoneId()));
 	}
 
 	/**

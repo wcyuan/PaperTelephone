@@ -32,15 +32,15 @@ public class PhraseTurn extends TurnImpl {
 	}
 
 	@Override
-	public void setReadView(final Activity a, int viewId) {
-		TextView prev = (TextView) a.findViewById(viewId);
+	public void setReadView(final Activity a, View view) {
+		TextView prev = (TextView) view;
 		prev.setText(mPhrase);
 	}
 
 	@Override
-	public void setEditView(final GameActivity a, int contentId, int doneId) {
-		final EditText next = (EditText) a.findViewById(contentId);
-		Button done = (Button) a.findViewById(doneId);
+	public void setEditView(final GameActivity a, View contentView, View doneView) {
+		final EditText next = (EditText) contentView;
+		Button done = (Button) doneView;
 		final PhraseTurn turn = this;
 		done.setOnClickListener(new OnClickListener() {
 			@Override

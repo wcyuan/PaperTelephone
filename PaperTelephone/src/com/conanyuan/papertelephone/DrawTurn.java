@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 
 public class DrawTurn extends TurnImpl {
@@ -68,13 +69,13 @@ public class DrawTurn extends TurnImpl {
 	/* -------- END Parcelable interface -------------- */
 
 	@Override
-	public void setReadView(Activity a, int viewId) {
-		ImageView prev = (ImageView) a.findViewById(viewId);
+	public void setReadView(Activity a, View view) {
+		ImageView prev = (ImageView) view;
 		prev.setImageBitmap(mBitmap);
 	}
 
 	@Override
-	public void setEditView(GameActivity a, int contentId, int doneId) {
+	public void setEditView(GameActivity a, View contentView, View doneView) {
 		// NOP: rely on the activity
 	}
 
