@@ -242,10 +242,6 @@ public class MainActivity extends FragmentActivity {
 			}
 		}
 
-		/**
-		 * The Fragment's UI is just a simple text view showing its instance
-		 * number.
-		 */
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
@@ -362,10 +358,6 @@ public class MainActivity extends FragmentActivity {
 			return f;
 		}
 
-		/**
-		 * The Fragment's UI is just a simple text view showing its instance
-		 * number.
-		 */
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
@@ -419,7 +411,7 @@ public class MainActivity extends FragmentActivity {
 		private ArrayList<String> mFilenames = new ArrayList<String>();
 
 		/**
-		 * Create a new instance of LocalGameListFragment
+		 * Create a new instance of FileListFragment
 		 */
 		static FileListFragment newInstance() {
 			FileListFragment fragment = new FileListFragment();
@@ -427,10 +419,6 @@ public class MainActivity extends FragmentActivity {
 			return fragment;
 		}
 
-		/**
-		 * The Fragment's UI is just a simple text view showing its instance
-		 * number.
-		 */
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container,
 				Bundle savedInstanceState) {
